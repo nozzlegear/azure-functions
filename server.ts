@@ -35,10 +35,12 @@ async function startServer(hostname: string, port: number, securePort: number) {
     await configureSkills(app);
 
     // Wildcard route must be registered after all other routes.
-    app.get("*", (req, res) => {
+    app.all("*", (req, res) => {
         if (res.finished) {
             return;
         }
+
+        inspect(`HTTP ${req.method} ${req.url}`);
 
         res.json({message: "This app is meant for Alexa, not for humans."});
     })
