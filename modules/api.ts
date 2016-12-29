@@ -1,8 +1,9 @@
 import inspect from "logspect";
 import isOkay from "./axios_utils";
-import { resolve, reject } from "bluebird";
+import * as Bluebird from "bluebird";
 import Axios, { AxiosResponse } from "axios";
 import { AUTH_HEADER_NAME } from "./constants";
+import { Plan, Subscriber, Summary } from "stages";
 
 export class ApiError extends Error {
     constructor(body?: string | Object, axiosResponse?: AxiosResponse) {
@@ -41,17 +42,17 @@ export class ApiError extends Error {
 }
 
 export default class BaseService {
-    constructor(private basePath?: string, private authToken?: string) { }
+    constructor(private basePath: string, private defaultHeaders?: Object) { }
 
     protected async sendRequest<T>(path: string, method: "POST" | "PUT" | "GET" | "DELETE", bodyData?: any, qsData?: any) {
         const url = `${this.basePath}/${path}`.replace(/\/\/+/i, "/");
         const request = Axios({
             url,
             method: method,
-            headers: {
+            headers: Object.assign({
                 "Content-Type": bodyData ? "application/json" : undefined,
-                [AUTH_HEADER_NAME]: this.authToken || undefined,
-            },
+                "Accept": "application/json",
+            }, this.defaultHeaders),
             params: qsData,
             data: bodyData,
         });
@@ -79,9 +80,29 @@ export default class BaseService {
 }
 
 export class Stages extends BaseService {
-    constructor(authToken?: string) {
-        super("https://getstages.com/api/v1/", authToken);
+    constructor(authToken: string) {
+        super("https://getstages.com/api/", {
+            "X-Stages-Access-Token": authToken,
+            "X-Stages-API-Version": "1",
+        });
     }
 
-    public getFinancials = () => this.sendRequest<any>("", "GET");
+    public listSubscribers = (status: "all" | "subscribed" = "subscribed") => this.sendRequest<Subscriber[]>("admin/subscribers", "GET", undefined, { status })
+
+    public countSubscribers = (status: "all" | "subscribed" = "subscribed") => this.sendRequest<{ count: number }>("admin/subscribers/count", "GET", undefined, { status });
+
+    public getFinancials = () => this.sendRequest<Plan[]>("admin/financials", "GET");
+
+    public async getSummary(status: "all" | "subscribed" = "subscribed"): Promise<Summary> {
+        const summary = await Bluebird.props({
+            subscribers: this.countSubscribers(status),
+            financials: this.getFinancials(),
+        }) as { subscribers: { count: number }, financials: Plan[] };
+        const output: Summary = {
+            totalActiveSubscribers: summary.subscribers.count,
+            totalMonthlyValue: summary.financials.reduce((total, plan) => total + plan.ValueInCents, 0) / 100,
+        }
+
+        return output;
+    }
 }

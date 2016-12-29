@@ -22,6 +22,8 @@ export const COUCHDB_URL = get("COUCHDB_URL", "http://localhost:5984");
 
 export const IRON_PASSWORD = get("IRON_PASSWORD");
 
+export const STAGES_API_KEY = get("STAGES_API_KEY");
+
 export const ISLIVE = env.NODE_ENV === "production" || (isBrowser && NODE_ENV === "production");
 
 export const AUTH_HEADER_NAME = "x-gearworks-token";
