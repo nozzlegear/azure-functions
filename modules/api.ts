@@ -45,14 +45,13 @@ export default class BaseService {
     constructor(private basePath: string, private defaultHeaders?: Object) { }
 
     protected async sendRequest<T>(path: string, method: "POST" | "PUT" | "GET" | "DELETE", bodyData?: any, qsData?: any) {
-        const url = `${this.basePath}/${path}`.replace(/\/\/+/i, "/");
+        const url = `${this.basePath}/${path}`;
         const request = Axios({
             url,
             method: method,
             headers: Object.assign({
-                "Content-Type": bodyData ? "application/json" : undefined,
                 "Accept": "application/json",
-            }, this.defaultHeaders),
+            }, this.defaultHeaders, bodyData ? { "Content-Type": "application/json" } : {}),
             params: qsData,
             data: bodyData,
         });
@@ -81,7 +80,7 @@ export default class BaseService {
 
 export class Stages extends BaseService {
     constructor(authToken: string) {
-        super("https://getstages.com/api/", {
+        super("https://getstages.com/api", {
             "X-Stages-Access-Token": authToken,
             "X-Stages-API-Version": "1",
         });
