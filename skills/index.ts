@@ -1,8 +1,13 @@
+import inspect from "logspect";
 import { Express } from "express";
+import * as Alexa from "alexa-app";
 
-// Skills
-import configureStages from "./stages";
+export default async function configure(server: Express) {
+    const skill = new Alexa.app("rasputin");
 
-export default async function configureSkills(app: Express) {
-    [configureStages].forEach(async configure => await configure(app));
+    skill.intent("summaryIntent", {  }, function (request, response) {
+        response.say("Rasputin is not yet ready to retrieve your financials.");
+    });
+
+    skill.express(server, "/skills/");
 }

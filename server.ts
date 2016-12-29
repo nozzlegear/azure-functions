@@ -40,8 +40,6 @@ async function startServer(hostname: string, port: number, securePort: number) {
             return;
         }
 
-        inspect(`HTTP ${req.method} ${req.url}`);
-
         res.json({message: "This app is meant for Alexa, not for humans."});
     })
 
