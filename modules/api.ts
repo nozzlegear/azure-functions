@@ -3,6 +3,9 @@ import isOkay from "./axios_utils";
 import * as Bluebird from "bluebird";
 import Axios, { AxiosResponse } from "axios";
 import { AUTH_HEADER_NAME } from "./constants";
+
+// Interfaces
+import { PortraitSummary } from "kmsignalr";
 import { Plan, Subscriber, Summary } from "stages";
 
 export class ApiError extends Error {
@@ -104,4 +107,14 @@ export class Stages extends BaseService {
 
         return output;
     }
+}
+
+export class KMSignalR extends BaseService {
+    constructor(private authToken: string) {
+        super("https://kmsignalr.azurewebsites.net", { })
+    }
+
+    public getSummary = () => this.sendRequest<PortraitSummary>(`firefox`, "GET", undefined, {
+        sudoCommand: this.authToken
+    })
 }

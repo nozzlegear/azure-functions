@@ -1,24 +1,12 @@
-import inspect from "logspect";
 import { Express } from "express";
 import * as Alexa from "alexa-app";
-import { Stages } from "../modules/api";
-import { STAGES_API_KEY } from "../modules/constants";
+import StagesSkill from "./stages";
+import KMSignalRSkill from "./kmsignalr";
 
 export default async function configure(server: Express) {
-    const skill = new Alexa.app("rasputin");
-    const api = new Stages(STAGES_API_KEY);
+    const app = new Alexa.app("rasputin");
 
-    skill.intent("summaryIntent", {}, function (request, response) {
-        (async function () {
-            const summary = await api.getSummary("subscribed");
+    [StagesSkill, KMSignalRSkill].forEach(async skill => await skill(app));
 
-            response.say(`Stages has ${summary.totalActiveSubscribers} subscribers, for a total of $${summary.totalMonthlyValue.toFixed(2)} per month.`);
-            response.send();
-        } ());
-
-        // alexa-app package requires async functions to return false.
-        return false;
-    });
-
-    skill.express(server, "/skills/");
+    app.express(server, "/skills/");
 }
