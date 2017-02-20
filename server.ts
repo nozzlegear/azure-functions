@@ -13,6 +13,7 @@ import { json as parseJson, urlencoded as parseUrlEncoded } from "body-parser";
 // Server configurations
 import configureCache from "./modules/cache";
 import configureSkills from "./skills";
+import configureRoutes from "./routes";
 
 async function startServer(hostname: string, port: number, securePort: number) {
     const app = express();
@@ -33,6 +34,7 @@ async function startServer(hostname: string, port: number, securePort: number) {
     // Configure the server
     await configureCache();
     await configureSkills(app);
+    await configureRoutes(app);
 
     // Wildcard route must be registered after all other routes.
     app.all("*", (req, res) => {

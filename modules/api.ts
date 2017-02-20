@@ -2,11 +2,11 @@ import inspect from "logspect";
 import isOkay from "./axios_utils";
 import * as Bluebird from "bluebird";
 import Axios, { AxiosResponse } from "axios";
-import { AUTH_HEADER_NAME } from "./constants";
 
 // Interfaces
 import { PortraitSummary } from "kmsignalr";
 import { Plan, Subscriber, Summary } from "stages";
+import { FollowsResponse, StreamsResponse } from "twitch";
 
 export class ApiError extends Error {
     constructor(body?: string | Object, axiosResponse?: AxiosResponse) {
@@ -16,6 +16,7 @@ export class ApiError extends Error {
             this.unauthorized = axiosResponse.status === 401;
             this.status = axiosResponse.status;
             this.statusText = axiosResponse.statusText;
+            this.url = axiosResponse.config.url;
 
             if (body) {
                 try {
@@ -40,6 +41,8 @@ export class ApiError extends Error {
     public status: number;
 
     public statusText: string;
+
+    public url: string;
 
     public details?: any;
 }
@@ -111,10 +114,30 @@ export class Stages extends BaseService {
 
 export class KMSignalR extends BaseService {
     constructor(private authToken: string) {
-        super("https://kmsignalr.azurewebsites.net", { })
+        super("https://kmsignalr.azurewebsites.net", {})
     }
 
     public getSummary = () => this.sendRequest<PortraitSummary>(`firefox`, "GET", undefined, {
         sudoCommand: this.authToken
     })
+}
+
+export class Twitch extends BaseService {
+    constructor(private client_id, private client_secret, private auth_token?: string) {
+        super("https://api.twitch.tv/kraken", !!auth_token ? {
+            "Authorization": `OAuth ${auth_token}`,
+        } : undefined);
+    }
+
+    authorize = (data: {
+        redirect_uri: string,
+        code: string,
+        state: string,
+    }) => this.sendRequest<{ access_token: string, scopes: string[] }>(`oauth2/token`, "POST", { ...data, grant_type: "authorization_code", client_id: this.client_id, client_secret: this.client_secret });
+
+    listFollowerStreams = (data?: {
+        limit?: number;
+        offset?: number;
+        stream_type?: "all" | "playlist" | "live"
+    }) => this.sendRequest<StreamsResponse>(`streams/followed`, "GET", undefined, data);
 }
