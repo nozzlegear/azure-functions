@@ -4,9 +4,11 @@ import StagesSkill from "./stages";
 import KMSignalRSkill from "./kmsignalr";
 
 export default async function configure(server: Express) {
-    const app = new Alexa.app("rasputin");
+    const auntieDot = new Alexa.app("auntie-dot");
+    const restream = new Alexa.app("restream");
 
-    [StagesSkill, KMSignalRSkill].forEach(async skill => await skill(app));
+    [StagesSkill, KMSignalRSkill].forEach(async skill => await skill(auntieDot));
 
-    app.express(server, "/skills/");
+    auntieDot.express(server, "/skills/");
+    restream.express(server, "/skills/");
 }
