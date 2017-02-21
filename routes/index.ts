@@ -13,7 +13,7 @@ export default async function configureRoutes(app: Express) {
         jwt_secret_key: Constants.JWT_SECRET_KEY,
         shopify_secret_key: "empty",
     });
-    const redirectUri = "http://localhost:3000/twitch/authorize";
+    const redirectUri = "https://alexa.nozzlegear.com/twitch/authorize";
 
     route({
         label: "Amazon OAuth authorization page",
