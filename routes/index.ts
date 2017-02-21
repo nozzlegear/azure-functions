@@ -16,6 +16,34 @@ export default async function configureRoutes(app: Express) {
     const redirectUri = "http://localhost:3000/twitch/authorize";
 
     route({
+        label: "Amazon OAuth authorization page",
+        method: "get",
+        path: "/streamcheck/oauth2/authorize",
+        handler: async function (req, res, next) {
+            const validRedirectUris = [
+                "https://layla.amazon.com/spa/skill/account-linking-status.html?vendorId=M2DEEI35HP2KJ5",
+                "https://pitangui.amazon.com/spa/skill/account-linking-status.html?vendorId=M2DEEI35HP2KJ5"
+            ];
+            const expectedClientId = "streamcheck-alexa-skill";
+
+            // Redirect the user to the twitch OAuth page
+            const query = qs.stringify({
+                response_type: "code",
+                client_id: Constants.TWITCH_CLIENT_ID,
+                scope: "user_read",
+                state: guid(),
+                force_verify: true,
+                redirect_uri: redirectUri,
+            });
+            const twitchAuthUrl = `https://api.twitch.tv/kraken/oauth2/authorize?${query}`;
+
+            res.redirect(twitchAuthUrl);
+
+            return next();
+        }
+    })
+
+    route({
         label: "Redirect to Twitch OAUth page",
         method: "get",
         path: "/twitch/oauth",
@@ -73,13 +101,17 @@ export default async function configureRoutes(app: Express) {
                 const streams = await api.listFollowerStreams({});
                 const response: string[] = [];
 
-                if (streams._total > 1) {
-                    response.push(`${streams._total} streamers you follow are streaming right now.`);
-                }
+                if (streams._total === 0) {
+                    response.push(`None of the channels you follow are streaming right now.`);
+                } else {
+                    if (streams._total > 1) {
+                        response.push(`${streams._total} streamers you follow are streaming right now.`);
+                    }
 
-                streams.streams.forEach(stream => {
-                    response.push(`${stream.channel.display_name} is streaming ${stream.channel.status}`);
-                })
+                    streams.streams.forEach(stream => {
+                        response.push(`${stream.channel.display_name} is streaming ${stream.channel.status}`);
+                    })
+                }
 
                 res.json({ response: response.join(". ") });
             } catch (_e) {
