@@ -19,15 +19,28 @@ export default async function configureRoutes(app: Express) {
         label: "Amazon OAuth authorization page",
         method: "get",
         path: "/streamcheck/oauth2/authorize",
-        handler: async function (req, res, next) {
-            const validRedirectUris = [
+        queryValidation: joi.object({
+            state: joi.string().required(),
+            client_id: joi.string().only("streamcheck-alexa-skill").required(),
+            response_type: joi.string().only("token").required(),
+            scope: joi.string().allow(""),
+            redirect_uri: joi.string().only([
                 "https://layla.amazon.com/spa/skill/account-linking-status.html?vendorId=M2DEEI35HP2KJ5",
                 "https://pitangui.amazon.com/spa/skill/account-linking-status.html?vendorId=M2DEEI35HP2KJ5"
-            ];
-            const expectedClientId = "streamcheck-alexa-skill";
+            ]).required(),
+        }),
+        handler: async function (req, res, next) {
+            const query = req.validatedQuery as {
+                state: string;
+                client_id: "streamcheck-alexa-skill",
+                response_type: "token",
+                scope?: string,
+                redirect_uri: string,
+            };
+            // TODO: Store the state and redirect_uri somewhere and give it an id that then gets passed as the state to the Twitch oauth URL.
 
             // Redirect the user to the twitch OAuth page
-            const query = qs.stringify({
+            const twitchQuery = qs.stringify({
                 response_type: "code",
                 client_id: Constants.TWITCH_CLIENT_ID,
                 scope: "user_read",
@@ -35,7 +48,7 @@ export default async function configureRoutes(app: Express) {
                 force_verify: true,
                 redirect_uri: redirectUri,
             });
-            const twitchAuthUrl = `https://api.twitch.tv/kraken/oauth2/authorize?${query}`;
+            const twitchAuthUrl = `https://api.twitch.tv/kraken/oauth2/authorize?${twitchQuery}`;
 
             res.redirect(twitchAuthUrl);
 
