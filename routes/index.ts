@@ -4,6 +4,7 @@ import inspect from "logspect";
 import { Express } from "express";
 import { v4 as guid } from "node-uuid";
 import getRouter from "gearworks-route";
+import * as Db from "../modules/database";
 import { Twitch, ApiError } from "../modules/api";
 import * as Constants from "../modules/constants";
 
@@ -37,39 +38,19 @@ export default async function configureRoutes(app: Express) {
                 scope?: string,
                 redirect_uri: string,
             };
-            // TODO: Store the state and redirect_uri somewhere and give it an id that then gets passed as the state to the Twitch oauth URL.
+            // Store the state and redirect_uri somewhere and give it an id that then gets passed as the state to the Twitch oauth URL.
+            const storedRequest = await Db.AccountLinkDb.post({ redirect_uri: query.redirect_uri, state: query.state });
 
             // Redirect the user to the twitch OAuth page
             const twitchQuery = qs.stringify({
                 response_type: "code",
                 client_id: Constants.TWITCH_CLIENT_ID,
                 scope: "user_read",
-                state: guid(),
+                state: storedRequest.id,
                 force_verify: true,
                 redirect_uri: redirectUri,
             });
             const twitchAuthUrl = `https://api.twitch.tv/kraken/oauth2/authorize?${twitchQuery}`;
-
-            res.redirect(twitchAuthUrl);
-
-            return next();
-        }
-    })
-
-    route({
-        label: "Redirect to Twitch OAUth page",
-        method: "get",
-        path: "/twitch/oauth",
-        handler: async function (req, res, next) {
-            const query = qs.stringify({
-                response_type: "code",
-                client_id: Constants.TWITCH_CLIENT_ID,
-                scope: "user_read",
-                state: guid(),
-                force_verify: true,
-                redirect_uri: redirectUri,
-            });
-            const twitchAuthUrl = `https://api.twitch.tv/kraken/oauth2/authorize?${query}`;
 
             res.redirect(twitchAuthUrl);
 
@@ -106,6 +87,8 @@ export default async function configureRoutes(app: Express) {
 
                 return next(e);
             }
+
+            // TODO: Store the Twitch account in the database, then retrieve the account link request and redirect the user back to Alexa
 
             // Refresh the API with the user's access token
             api = new Twitch(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, token);
