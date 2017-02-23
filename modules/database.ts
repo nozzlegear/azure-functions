@@ -9,6 +9,10 @@ export default async function configureAll() {
     await configureDatabase(COUCHDB_URL, {
         name: dbName,
     })
+
+    await configureDatabase(COUCHDB_URL, {
+        name: accountLinkDbName,
+    })
 }
 
 export const AccountLinkDb = new Client<AccountLinkRequest>(COUCHDB_URL, accountLinkDbName, { warnings: false });
