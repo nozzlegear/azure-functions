@@ -14,6 +14,7 @@ import { json as parseJson, urlencoded as parseUrlEncoded } from "body-parser";
 import configureCache from "./modules/cache";
 import configureSkills from "./skills";
 import configureRoutes from "./routes";
+import configureDatabase from "./modules/database";
 
 async function startServer(hostname: string, port: number, securePort: number) {
     const app = express();
@@ -33,6 +34,7 @@ async function startServer(hostname: string, port: number, securePort: number) {
 
     // Configure the server
     await configureCache();
+    await configureDatabase();
     await configureSkills(app);
     await configureRoutes(app);
 
