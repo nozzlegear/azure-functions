@@ -8,6 +8,11 @@ import * as Db from "../modules/database";
 import { Twitch, ApiError } from "../modules/api";
 import * as Constants from "../modules/constants";
 
+// React pages
+import * as ReactServer from "react-dom/server";
+import PrivacyPolicy from "../html/privacy-policy";
+import StreamcheckPage from "../html/streamcheck-index";
+
 export default async function configureRoutes(app: Express) {
     const route = getRouter<any>(app, {
         iron_password: Constants.IRON_PASSWORD,
@@ -15,6 +20,20 @@ export default async function configureRoutes(app: Express) {
         shopify_secret_key: "empty",
     });
     const redirectUri = "https://alexa.nozzlegear.com/twitch/authorize";
+
+    route({
+        label: "Streamcheck privacy policy",
+        method: "get",
+        path: "/streamcheck/privacy-policy",
+        handler: async function (req, res, next) {
+            const pageHtml = ReactServer.renderToStaticMarkup(PrivacyPolicy({}));
+
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.send(`<!DOCTYPE html> ${pageHtml}`);
+
+            return next();
+        }
+    })
 
     route({
         label: "Amazon OAuth authorization page",
@@ -51,8 +70,10 @@ export default async function configureRoutes(app: Express) {
                 redirect_uri: redirectUri,
             });
             const twitchAuthUrl = `https://api.twitch.tv/kraken/oauth2/authorize?${twitchQuery}`;
+            const pageHtml = ReactServer.renderToStaticMarkup(StreamcheckPage({target_url: twitchAuthUrl}));
 
-            res.redirect(twitchAuthUrl);
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.send(`<!DOCTYPE html> ${pageHtml}`);
 
             return next();
         }
