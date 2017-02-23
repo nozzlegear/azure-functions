@@ -88,35 +88,17 @@ export default async function configureRoutes(app: Express) {
                 return next(e);
             }
 
-            // TODO: Store the Twitch account in the database, then retrieve the account link request and redirect the user back to Alexa
+            // Store the Twitch account token in the database
+            const storeResult = await Db.TwitchAuthDb.post({twitch_token: token});
 
-            // Refresh the API with the user's access token
-            api = new Twitch(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, token);
+            // Pull the account link request from the database, which we can look up using the state id
+            const linkRequest = await Db.AccountLinkDb.get(query.state);
 
-            try {
-                const streams = await api.listFollowerStreams({});
-                const response: string[] = [];
+            // Your service redirects the user to the specified redirect_uri and passes along the state, access_token, and token_type in the URL fragment.
+            const uri = `${linkRequest.redirect_uri}&state=${linkRequest.state}&access_token=${storeResult.id}&token_type=Bearer`;
 
-                if (streams._total === 0) {
-                    response.push(`None of the channels you follow are streaming right now.`);
-                } else {
-                    if (streams._total > 1) {
-                        response.push(`${streams._total} streamers you follow are streaming right now.`);
-                    }
-
-                    streams.streams.forEach(stream => {
-                        response.push(`${stream.channel.display_name} is streaming ${stream.channel.status}`);
-                    })
-                }
-
-                res.json({ response: response.join(". ") });
-            } catch (_e) {
-                const e: ApiError = _e;
-
-                inspect("Error retrieving followed streams", e);
-
-                return next(e);
-            }
+            // Redirect the user back to Alexa
+            res.redirect(uri);
 
             return next();
         }
