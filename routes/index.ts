@@ -95,7 +95,7 @@ export default async function configureRoutes(app: Express) {
             const linkRequest = await Db.AccountLinkDb.get(query.state);
 
             // Your service redirects the user to the specified redirect_uri and passes along the state, access_token, and token_type in the URL fragment.
-            const uri = `${linkRequest.redirect_uri}&state=${linkRequest.state}&access_token=${storeResult.id}&token_type=Bearer`;
+            const uri = `${linkRequest.redirect_uri}#state=${linkRequest.state}&access_token=${storeResult.id}&token_type=Bearer`;
 
             // Redirect the user back to Alexa
             res.redirect(uri);
