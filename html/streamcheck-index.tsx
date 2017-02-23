@@ -7,7 +7,7 @@ export interface IProps extends React.Props<React.StatelessComponent<IProps>> {
 
 const STYLES = {
     section: {
-        margin: `40px`,
+        margin: 0,
         padding: `40px`,
         background: `#cceaf3`,
         color: `#333`,
