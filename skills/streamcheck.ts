@@ -21,7 +21,7 @@ export default async function configure(alexa) {
                     responses.push(`None of the channels you follow are streaming right now.`);
                 } else {
                     if (streams._total > 1) {
-                        responses.push(`${streams._total} streamers you follow are streaming right now.`);
+                        responses.push(`${streams._total} streamers you follow are streaming right now`);
                     }
 
                     streams.streams.forEach(stream => {
