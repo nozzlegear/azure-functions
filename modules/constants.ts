@@ -32,6 +32,8 @@ export const TWITCH_CLIENT_ID = get("TWITCH_CLIENT_ID");
 
 export const TWITCH_CLIENT_SECRET = get("TWITCH_CLIENT_SECRET");
 
+export const USE_LEX = get("USE_LEX");
+
 export const ISLIVE = env.NODE_ENV === "production";
 
 if (!IRON_PASSWORD) {
