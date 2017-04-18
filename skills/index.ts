@@ -7,12 +7,12 @@ import KMSignalRSkill from "./kmsignalr";
 import StreamcheckSkill from "./streamcheck";
 
 export default async function configure(server: Express) {
-    const auntieDot = new Alexa.app("auntie-dot");
+    const blackbox = new Alexa.app("blackbox");
     const streamcheck = new Alexa.app("streamcheck");
 
-    [StagesSkill, KMSignalRSkill].forEach(async skill => await skill(auntieDot));
+    [StagesSkill, KMSignalRSkill].forEach(async skill => await skill(blackbox));
     await StreamcheckSkill(streamcheck);
 
-    auntieDot.express(server, "/skills/");
+    blackbox.express(server, "/skills/");
     streamcheck.express(server, "/skills/");
 }
