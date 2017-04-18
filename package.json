@@ -33,7 +33,7 @@
         "boom": "^3.2.0",
         "catbox": "^7.1.1",
         "catbox-memory": "^2.0.2",
-        "davenport": "^1.1.4",
+        "davenport": "^2.1.0",
         "express": "^4.14.0",
         "gearworks-route": "^1.0.0",
         "iron": "^4.0.4",

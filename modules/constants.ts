@@ -16,6 +16,10 @@ function get(baseKey: string, defaultValue = undefined) {
 
 export const COUCHDB_URL = get("COUCHDB_URL", "http://localhost:5984");
 
+export const COUCHDB_USERNAME = get("COUCHDB_USERNAME");
+
+export const COUCHDB_PASSWORD = get("COUCHDB_PASSWORD");
+
 export const IRON_PASSWORD = get("IRON_PASSWORD");
 
 export const JWT_SECRET_KEY = get("JWT_SECRET_KEY");

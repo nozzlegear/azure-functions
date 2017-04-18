@@ -1,19 +1,25 @@
-import { COUCHDB_URL } from "./constants";
+import * as Constants from "./constants";
 import { TwitchAuth, AccountLinkRequest } from "app";
-import { Client, configureDatabase } from "davenport";
+import { Client, configureDatabase, ClientOptions } from "davenport";
 
 const dbName = "alexa_twitch_oauth";
 const accountLinkDbName = "alexa_account_link_requests";
 
 export default async function configureAll() {
-    await configureDatabase(COUCHDB_URL, {
-        name: dbName,
-    })
+    const options: ClientOptions = {
+        warnings: false,
+        username: Constants.COUCHDB_USERNAME,
+        password: Constants.COUCHDB_PASSWORD,
+    };
 
-    await configureDatabase(COUCHDB_URL, {
+    await configureDatabase(Constants.COUCHDB_URL, {
+        name: dbName,
+    }, options);
+
+    await configureDatabase(Constants.COUCHDB_URL, {
         name: accountLinkDbName,
-    })
+    }, options);
 }
 
-export const AccountLinkDb = new Client<AccountLinkRequest>(COUCHDB_URL, accountLinkDbName, { warnings: false });
-export const TwitchAuthDb = new Client<TwitchAuth>(COUCHDB_URL, dbName, { warnings: false });
+export const AccountLinkDb = new Client<AccountLinkRequest>(Constants.COUCHDB_URL, accountLinkDbName, { warnings: false });
+export const TwitchAuthDb = new Client<TwitchAuth>(Constants.COUCHDB_URL, dbName, { warnings: false });
