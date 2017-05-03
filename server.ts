@@ -1,13 +1,11 @@
 import * as os from "os";
 import * as path from "path";
 import * as http from "http";
-import * as https from "https";
 import inspect from "logspect";
 import * as express from "express";
 import { BoomError, wrap } from "boom";
 import { ISLIVE, USE_LEX } from "./modules/constants";
 import * as httpsRedirect from "redirect-https";
-import * as letsEncrypt from "letsencrypt-express";
 import { json as parseJson, urlencoded as parseUrlEncoded } from "body-parser";
 
 // Server configurations
@@ -16,7 +14,7 @@ import configureSkills from "./skills";
 import configureRoutes from "./routes";
 import configureDatabase from "./modules/database";
 
-async function startServer(hostname: string, port: number, securePort: number) {
+async function startServer(hostname: string, port: number) {
     const app = express();
 
     app.use((req, res, next) => {
@@ -65,37 +63,14 @@ async function startServer(hostname: string, port: number, securePort: number) {
         return next();
     } as any);
 
-    if (USE_LEX) {
-        // Prepare encryption
-        const lexTempDir = path.join(os.tmpdir(), "acme-challenges");
-        const lex = letsEncrypt.create({
-            // You must set server to https://acme-v01.api.letsencrypt.org/directory after you have tested that your setup works.
-            server: (!ISLIVE) ? "staging" : "https://acme-v01.api.letsencrypt.org/directory",
-            challenges: { 'tls-sni-01': require('le-challenge-sni').create({ webrootPath: lexTempDir }) },
-            challengeType: 'tls-sni-01',
-            store: require('le-store-certbot').create({ webrootPath: lexTempDir }),
-            approveDomains: !ISLIVE ? ["127.0.0.1"] : ["alexa.nozzlegear.com"],
-            email: `joshua@nozzlegear.com`,
-            agreeTos: true,
-        });
-         
-        return {
-            https: https.createServer(lex.httpsOptions, lex.middleware(app)).listen(securePort, hostname),
-            http: http.createServer(ISLIVE ? httpsRedirect() : app).listen(port, hostname),
-        }
-    }
-
-    return {
-        http: http.createServer(app).listen(port, hostname),
-    };
+    return http.createServer(app).listen(port, hostname);
 }
 
 const host = process.env.HOST || "127.0.0.1";
 const port = process.env.PORT || 3000;
-const securePort = process.env.SECURE_PORT || 3001;
 
-startServer(host, port, securePort).then((servers: { http: http.Server, https?: https.Server }) => {
-    inspect(`HTTP and HTTPS servers are listening on ${host}:${port} and ${host}:${securePort}.`);
+startServer(host, port).then((server: http.Server) => {
+    inspect(`Server is listening on ${host}:${port}.`);
 }).catch(e => {
     inspect("Error starting server.", e);
 });
