@@ -12,13 +12,26 @@ export default async function configure(alexa) {
 
     alexa.intent("booksIntent", {}, function (request, response) {
         (async function () {
-            const lastFriday = getLastFriday();
-            const sales = await api.listSales(lastFriday.yyyyMmDd, null, 1);
-            const gumroadFeeRate = 0.0564;
-            const total = sales.reduce((total, sale, index) => total += sale.price , 0) * gumroadFeeRate;
+            try {
+                const lastFriday = getLastFriday();
+                const sales = await api.listSales(lastFriday.yyyyMmDd, null, 1);
+                const gumroadFeeRate = 0.0564;
 
-            response.say(`You've sold ${sales.length} books on Gumroad since Friday, for a payout of $${total.toFixed(2)} after fees.`);
-            response.send();
+                if (! sales.success) {
+                    response.say(`There was an error with Gumroad's response.`, sales);
+                } else {
+                    const total = sales.sales.reduce((total, sale, index) => total += sale.price , 0) * gumroadFeeRate;
+
+                    response.say(`You've sold ${sales.sales.length} books on Gumroad since Friday, for a payout of $${total.toFixed(2)} after fees.`);
+                }
+
+                response.send();
+            } catch (e) {
+                inspect("Error with Blackbox's book skill:", e);
+
+                response.say("There was an error with Blackbox's book skill.");
+                response.send();
+            }
         } ());
 
         // alexa-app package requires async functions to return false.

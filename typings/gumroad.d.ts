@@ -2,8 +2,8 @@ declare module "gumroad-api" {
     class Gumroad {
         constructor(options: { token: string })
 
-        listSales(afterDate: string, beforeDate: string, pageNumber: number): Promise<Gumroad.Sale[]>;
-        getSale(saleId: string): Promise<Gumroad.Sale>;
+        listSales(afterDate: string, beforeDate: string, pageNumber: number): Promise<Gumroad.ListResponse>;
+        getSale(saleId: string): Promise<Gumroad.GetResponse>;
     }
 
     namespace Gumroad {
