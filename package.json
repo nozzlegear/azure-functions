@@ -4,11 +4,13 @@
     "private": true,
     "description": "Custom Alexa skills that I use at home.",
     "main": "bin/server.js",
+    "bin": "bin/server.js",
     "author": "Joshua Harms <joshua@nozzlegear.com>",
     "license": "MIT",
     "scripts": {
         "build": "tsc -p .",
         "start": "node ./bin/server.js",
+        "package": "npm run build && pkg package.json",
         "test": "npm run build && npm run start"
     },
     "devDependencies": {

@@ -36,6 +36,9 @@ node_modules
 bin/
 wwwroot/
 dist/
+alexa-skills-linux
+alexa-skills-macos
+alexa-skills-win.exe
 
 # Ignore private files
 *.private.json
