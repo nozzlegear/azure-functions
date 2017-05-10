@@ -23,6 +23,7 @@
         "@types/qs": "^6.2.30",
         "@types/react": "^15.0.12",
         "@types/react-dom": "^0.14.23",
+        "pkg": "^3.0.3",
         "typescript": "^2.1.4"
     },
     "dependencies": {
@@ -36,7 +37,7 @@
         "davenport": "^2.1.0",
         "express": "^4.14.0",
         "gearworks-route": "^1.0.0",
-        "iron": "^4.0.4",
+        "gumroad-api": "^0.4.0",
         "is-in-browser": "^1.0.2",
         "joi": "^8.1.0",
         "letsencrypt-express": "^2.0.5",
