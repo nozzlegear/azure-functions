@@ -6,17 +6,29 @@
     "configurations": [
         {
             "type": "node",
-            "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceRoot}\\bin\\server.js",
-            "outFiles": []
+            "request": "attach",
+            "name": "Attach to bin/test (Inspector Protocol)",
+            "port": 9229,
+            "protocol": "inspector"
         },
         {
             "type": "node",
             "request": "attach",
-            "name": "Attach to Port",
-            "address": "localhost",
-            "port": 5858,
+            "name": "Attach to server (Inspector Protocol)",
+            "port": 9229,
+            "protocol": "inspector"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug bin/test",
+            "program": "${workspaceRoot}/bin/test.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Server",
+            "program": "${workspaceRoot}\\bin\\server.js",
             "outFiles": []
         }
     ]
