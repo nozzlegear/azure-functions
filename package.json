@@ -10,7 +10,7 @@
     "scripts": {
         "build": "tsc -p .",
         "start": "node ./bin/server.js",
-        "package": "npm run build && pkg package.json",
+        "package": "npm run build && pkg package.json --targets linux --output alexa-skills-linux",
         "test": "npm run build && npm run start"
     },
     "devDependencies": {
