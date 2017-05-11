@@ -20,7 +20,8 @@ export default async function configure(alexa) {
                 if (! sales.success) {
                     response.say(`There was an error with Gumroad's response.`, sales);
                 } else {
-                    const total = sales.sales.reduce((total, sale, index) => total += sale.price , 0) * gumroadFeeRate;
+                    const subtotal = sales.sales.reduce((total, sale, index) => total += sale.price , 0) / 100;
+                    const total = subtotal - (subtotal * gumroadFeeRate);
 
                     response.say(`You've sold ${sales.sales.length} books on Gumroad since Friday, for a payout of $${total.toFixed(2)} after fees.`);
                 }
