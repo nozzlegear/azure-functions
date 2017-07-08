@@ -1,7 +1,5 @@
-import inspect from "logspect";
-import { resolve } from "path";
-import { snakeCase } from "lodash";
-import { v4 as guid } from "node-uuid";
+import inspect from 'logspect';
+import { snakeCase } from 'lodash';
 
 const env = process && process.env || {};
 
@@ -20,13 +18,7 @@ export const COUCHDB_USERNAME = get("COUCHDB_USERNAME");
 
 export const COUCHDB_PASSWORD = get("COUCHDB_PASSWORD");
 
-export const IRON_PASSWORD = get("IRON_PASSWORD");
-
-export const JWT_SECRET_KEY = get("JWT_SECRET_KEY");
-
 export const STAGES_API_KEY = get("STAGES_API_KEY");
-
-export const KMSIGNALR_API_KEY = get("KMSIGNALR_API_KEY");
 
 export const TWITCH_CLIENT_ID = get("TWITCH_CLIENT_ID");
 
@@ -34,10 +26,6 @@ export const TWITCH_CLIENT_SECRET = get("TWITCH_CLIENT_SECRET");
 
 export const GUMROAD_TOKEN = get("GUMROAD_ACCESS_TOKEN");
 
-export const USE_LEX = get("USE_LEX");
+export const BLIZZARD_SECRET_KEY = get("BLIZZARD_SECRET_KEY");
 
 export const ISLIVE = env.NODE_ENV === "production";
-
-if (!IRON_PASSWORD) {
-    inspect("Warning: IRON_PASSWORD was not found in environment variables. Session authorization will be unsecure and may exhibit unwanted behavior.");
-}

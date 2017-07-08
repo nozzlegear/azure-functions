@@ -1,29 +1,25 @@
 declare module "kmsignalr" {
-    export interface PortraitSummary {
-        Result: {
-            /**
-            The total number of portrait orders.
-            */
-            Total: number;
-
-            Data: PortraitStatus[];
-        }
+    export interface SummaryResult {
+        total_orders: number;
+        summaries: Summary[];
     }
 
-    export interface PortraitStatus {
-        /**
-        The status's label.
-        */
-        Label: string;
-
-        /**
-        The status's hex color.
-        */
-        Color: string;
-
+    export interface Summary {
         /**
         The total number of portraits with this status.
         */
-        Count: number;
+        current_count: number;
+        /**
+         * The status's id.
+         */
+        for_status: string;
+        /**
+        The status's label.
+        */
+        status_label: string;
+        /**
+        The status's hex color.
+        */
+        hex_color: string;
     }
 }

@@ -1,12 +1,16 @@
-import inspect from "logspect";
-import isOkay from "./axios_utils";
-import * as Bluebird from "bluebird";
-import Axios, { AxiosResponse } from "axios";
+import AxiosFactory, { AxiosResponse } from 'axios';
+import inspect from 'logspect';
+import { FollowsResponse, StreamsResponse } from 'twitch';
+import { Plan, Subscriber, Summary } from 'stages';
+import { RealmStatuses } from 'blizzard';
+import { SummaryResult } from 'kmsignalr';
 
-// Interfaces
-import { PortraitSummary } from "kmsignalr";
-import { Plan, Subscriber, Summary } from "stages";
-import { FollowsResponse, StreamsResponse } from "twitch";
+/**
+ * Indicates whether the request was a success or not (between 200-300).
+ */
+export function isOkay(response: AxiosResponse) {
+    return response.status >= 200 && response.status < 300;
+}
 
 export class ApiError extends Error {
     constructor(body?: string | Object, axiosResponse?: AxiosResponse) {
@@ -50,9 +54,14 @@ export class ApiError extends Error {
 export default class BaseService {
     constructor(private basePath: string, private defaultHeaders?: Object) { }
 
+    private axios = AxiosFactory.create({
+        // Never throw an error on non-200 responses
+        validateStatus: () => true
+    })
+
     protected async sendRequest<T>(path: string, method: "POST" | "PUT" | "GET" | "DELETE", bodyData?: any, qsData?: any) {
         const url = `${this.basePath}/${path}`;
-        const request = Axios({
+        const request = this.axios.request({
             url,
             method: method,
             headers: Object.assign({
@@ -99,13 +108,12 @@ export class Stages extends BaseService {
     public getFinancials = () => this.sendRequest<Plan[]>("admin/financials", "GET");
 
     public async getSummary(status: "all" | "subscribed" = "subscribed"): Promise<Summary> {
-        const summary = await Bluebird.props({
-            subscribers: this.countSubscribers(status),
-            financials: this.getFinancials(),
-        }) as { subscribers: { count: number }, financials: Plan[] };
+        const subscribers = this.countSubscribers(status);
+        const financials = this.getFinancials();
+
         const output: Summary = {
-            totalActiveSubscribers: summary.subscribers.count,
-            totalMonthlyValue: summary.financials.reduce((total, plan) => total + plan.ValueInCents, 0) / 100,
+            totalActiveSubscribers: (await subscribers).count,
+            totalMonthlyValue: (await financials).reduce((total, plan) => total + plan.ValueInCents, 0) / 100,
         }
 
         return output;
@@ -114,12 +122,10 @@ export class Stages extends BaseService {
 
 export class KMSignalR extends BaseService {
     constructor(private authToken: string) {
-        super("https://kmsignalr.azurewebsites.net", {})
+        super("http://kmsignalr..com", {})
     }
 
-    public getSummary = () => this.sendRequest<PortraitSummary>(`firefox`, "GET", undefined, {
-        sudoCommand: this.authToken
-    })
+    public getSummary = () => this.sendRequest<SummaryResult>(`/api/v1/orders/portraits/summary`, "GET")
 }
 
 export class Twitch extends BaseService {
@@ -140,4 +146,18 @@ export class Twitch extends BaseService {
         offset?: number;
         stream_type?: "all" | "playlist" | "live"
     }) => this.sendRequest<StreamsResponse>(`streams/followed`, "GET", undefined, data);
+}
+
+export class Blizzard extends BaseService {
+    constructor(private secretKey: string) {
+        super(`https://us.api.battle.net`)
+    }
+
+    listRealmStatuses(realms?: string[]) {
+        return this.sendRequest<RealmStatuses>("wow/realm/status", "GET", undefined, {
+            locale: "en_US",
+            apikey: this.secretKey,
+            realms: realms || []
+        })
+    }
 }

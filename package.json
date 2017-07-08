@@ -1,55 +1,28 @@
 {
-    "name": "alexa-skills",
-    "version": "1.0.0",
-    "private": true,
-    "description": "Custom Alexa skills that I use at home.",
-    "main": "bin/server.js",
-    "bin": "bin/server.js",
-    "author": "Joshua Harms <joshua@nozzlegear.com>",
-    "license": "MIT",
-    "scripts": {
-        "build": "tsc -p .",
-        "start": "node ./bin/server.js",
-        "package": "npm run build && pkg package.json --targets linux --output alexa-skills-linux",
-        "test": "npm run build && npm run start"
-    },
-    "devDependencies": {
-        "@types/bluebird": "^3.0.35",
-        "@types/body-parser": "^0.0.33",
-        "@types/boom": "^0.0.32",
-        "@types/express": "^4.0.33",
-        "@types/joi": "^9.0.32",
-        "@types/lodash": "^4.14.38",
-        "@types/node": "^6.0.46",
-        "@types/node-uuid": "^0.0.28",
-        "@types/qs": "^6.2.30",
-        "@types/react": "^15.0.12",
-        "@types/react-dom": "^0.14.23",
-        "pkg": "^3.0.3",
-        "typescript": "^2.1.4"
-    },
-    "dependencies": {
-        "alexa-app": "^2.3.4",
-        "axios": "^0.15.3",
-        "bluebird": "^3.4.0",
-        "body-parser": "^1.15.2",
-        "boom": "^3.2.0",
-        "catbox": "^7.1.1",
-        "catbox-memory": "^2.0.2",
-        "davenport": "^2.1.0",
-        "express": "^4.14.0",
-        "gearworks-route": "^1.0.0",
-        "gumroad-api": "^0.4.0",
-        "is-in-browser": "^1.0.2",
-        "joi": "^8.1.0",
-        "letsencrypt-express": "^2.0.5",
-        "lodash": "^4.13.1",
-        "logspect": "^1.0.2",
-        "node-uuid": "^1.4.7",
-        "qs": "^6.3.0",
-        "react": "^15.4.2",
-        "react-dom": "^15.4.2",
-        "redirect-https": "^1.1.1",
-        "string-capitalize": "^1.0.1"
-    }
+  "name": "alexa-rando",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "alexa-message-builder": "^1.1.0",
+    "axios": "^0.16.2",
+    "gumroad-api": "^0.4.0",
+    "logspect": "^1.0.2",
+    "node-uuid": "^1.4.8",
+    "string-capitalize": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.9",
+    "@types/node-uuid": "^0.0.28",
+    "@types/webpack": "^3.0.2",
+    "azure-functions-pack": "^0.2.2",
+    "ts-node": "^3.2.0",
+    "typescript": "^2.4.1",
+    "webpack": "^3.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
 }
