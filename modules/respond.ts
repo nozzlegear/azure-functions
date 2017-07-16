@@ -1,4 +1,5 @@
 import { Context } from 'azure-functions';
+import alexaMessage = require("alexa-message-builder");
 
 class Response {
     constructor(private context: Context) {
@@ -11,7 +12,7 @@ class Response {
 
     private _contentType: string = "application/json";
 
-    private _body: string;
+    private _body: any;
 
     private _redirect: { to: string; permanent: boolean };
 
@@ -56,15 +57,15 @@ class Response {
     /**
      * Sets the response body, stringifying the value if it's an object or array. Will throw an error if the value is null or undefined.
      */
-    setBody(this: Response, value: string | object): Response {
+    setBody(this: Response, value: string | object | alexaMessage): Response {
         if (value === null || value === undefined) {
             throw new Error(`Could not set response body: value was null or undefined.`);
         }
 
-        if (typeof (value) === "string") {
-            this._body = value;
+        if (value instanceof alexaMessage) {
+            this._body = value.get();
         } else {
-            this._body = JSON.stringify(value);
+            this._body = value;
         }
 
         return this;
@@ -93,10 +94,10 @@ class Response {
     }
 
     /**
-     * Finalizes the response and sends it to the recipient. Will call context.done(). 
-     * @param context 
+     * Finalizes the response and sends it to the recipient. Will not call context.done() by default. 
+     * @param callDone Whether to call context.done() after sending the response. When running in an Azure function you should either return a promise *or* call context.done, not both.
      */
-    send(this: Response): boolean {
+    send(this: Response, callDone = false): boolean {
         this.context.res = this._redirect && this._redirect.to ? {
             status: this._redirect.permanent ? 301 : 302,
             headers: { ...this._headers, "Location": this._redirect.to, "Content-Type": undefined },
@@ -107,7 +108,9 @@ class Response {
                 headers: { ... this._headers, "Content-Type": this._contentType }
             }
 
-        this.context.done();
+        if (callDone) {
+            this.context.done();
+        }
 
         return true;
     }
