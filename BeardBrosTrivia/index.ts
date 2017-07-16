@@ -43,5 +43,5 @@ export = async (context: Context, req: Request) => {
     // Replace "Jirard" with "Gerard" to get Alexa to pronounce it correctly
     message = message.replace(/jirard/ig, "Gerard");
 
-    return response.setBody(message.trim()).send();
+    return response.setBody(new alexa().addText(message.trim()).get()).send();
 };
