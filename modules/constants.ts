@@ -1,13 +1,12 @@
 import inspect from 'logspect';
-import { snakeCase } from 'lodash';
 
 const env = process && process.env || {};
 
 export const APP_NAME = "Alexa";
 
 function get(baseKey: string, defaultValue = undefined) {
-    const snakedAppName = snakeCase(APP_NAME).toUpperCase();
-    const snakedKey = snakeCase(baseKey).toUpperCase();
+    const snakedAppName = APP_NAME.toUpperCase();
+    const snakedKey = baseKey.toUpperCase();
 
     return env[`${snakedAppName}_${snakedKey}`] || env[`GEARWORKS_${snakedKey}`] || env[snakedKey] || defaultValue;
 }
