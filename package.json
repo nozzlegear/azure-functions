@@ -31,6 +31,8 @@
   "scripts": {
     "prebuild": "rimraf .funcpack",
     "build": "tsc -p . && funcpack pack ./",
+    "predeploy": "npm run build",
+    "deploy": "./deploy.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

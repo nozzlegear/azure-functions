@@ -40,6 +40,9 @@ alexa-skills-linux
 alexa-skills-macos
 alexa-skills-win.exe
 *.js
+*.zip
+*.tar
+*.tar.gz
 
 # Ignore private files
 *.private.json
