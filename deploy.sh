@@ -115,7 +115,7 @@ if hash yarn 2>/dev/null; then
   echo "Using yarn $YARN_VERSION"
 else 
   echo "Yarn was not found. Installing globally."
-  npm i -g yarn
+  eval $NPM_CMD i -g yarn
   exitWithMessageOnError "yarn command installation failed"
   cd - > /dev/null
 fi
