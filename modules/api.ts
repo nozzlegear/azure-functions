@@ -121,8 +121,8 @@ export class Stages extends BaseService {
 }
 
 export class KMSignalR extends BaseService {
-    constructor(private authToken: string) {
-        super("http://kmsignalr..com", {})
+    constructor() {
+        super("http://kmsignalr.com", {})
     }
 
     public getSummary = () => this.sendRequest<SummaryResult>(`/api/v1/orders/portraits/summary`, "GET")

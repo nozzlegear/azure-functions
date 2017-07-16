@@ -6,24 +6,34 @@
   "dependencies": {
     "alexa-message-builder": "^1.1.0",
     "axios": "^0.16.2",
+    "boom": "^5.1.0",
+    "davenport": "^2.6.0",
+    "gearworks-validation": "^1.2.0",
     "gumroad-api": "^0.4.0",
     "logspect": "^1.0.2",
     "node-uuid": "^1.4.8",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "string-capitalize": "^1.0.1"
   },
   "devDependencies": {
+    "@types/boom": "^4.3.5",
+    "@types/joi": "^10.4.0",
     "@types/node": "^8.0.9",
     "@types/node-uuid": "^0.0.28",
+    "@types/react-dom": "^15.5.1",
     "@types/webpack": "^3.0.2",
     "azure-functions-pack": "^0.2.2",
+    "rimraf": "^2.6.1",
     "ts-node": "^3.2.0",
-    "typescript": "^2.4.1",
-    "webpack": "^3.1.0"
+    "typescript": "^2.4.1"
   },
   "scripts": {
+    "prebuild": "rimraf .funcpack",
+    "build": "tsc -p . && funcpack pack ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Joshua Harms <joshua@nozzlegear.com>",
   "license": "MIT"
 }

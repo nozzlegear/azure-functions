@@ -39,6 +39,7 @@ dist/
 alexa-skills-linux
 alexa-skills-macos
 alexa-skills-win.exe
+*.js
 
 # Ignore private files
 *.private.json

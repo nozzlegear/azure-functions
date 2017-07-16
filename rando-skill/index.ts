@@ -1,20 +1,18 @@
 import { Context, Request } from 'azure-functions';
+import { Respond } from '../modules/respond';
 import alexa = require("alexa-message-builder");
 
-export = async (context: Context, req: Request) => {
+export = async (context: Context, req: Request): Promise<boolean> => {
     context.log('JavaScript HTTP trigger function processed a request.');
 
+    const response = Respond(context);
     const body = req.body || {};
     const query = req.query || {};
     const alexaRequest = body.request;
     const alexaSession = body.session;
 
     if (!alexaRequest || !alexaRequest.intent) {
-        context.res = {
-            body: "Invalid Alexa request. Body did not contain a .request or .intent value."
-        }
-
-        return context.done();
+        return response.setBody(`Invalid Alexa request. Body did not contain a .request or .intent value.`).send();
     }
 
     const message = new alexa();

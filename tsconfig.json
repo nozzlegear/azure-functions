@@ -4,7 +4,7 @@
         "target": "es2015",
         "noImplicitAny": false,
         "sourceMap": false,
-        "outDir": "bin",
+        // "outDir": "bin",
         "jsx": "react",
         "experimentalDecorators": true
     },

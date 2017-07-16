@@ -1,14 +1,15 @@
 import inspect from 'logspect';
 import { Context, Request } from 'azure-functions';
 import { KMSignalR } from '../modules/api';
-import { KMSIGNALR_API_KEY } from '../modules/constants';
+import { Respond } from '../modules/respond';
 import Alexa = require("alexa-message-builder");
 
-const api = new KMSignalR(KMSIGNALR_API_KEY);
+const api = new KMSignalR();
 
 export = async (context: Context, req: Request) => {
     context.log('Running the KMSignalR intent.');
 
+    const response = Respond(context);
     const result = await api.getSummary();
     const onHold = result.summaries.find(d => d.for_status === "on_hold");
     const unshipped = result.summaries.find(d => d.for_status === "total_unshipped");
@@ -20,10 +21,5 @@ export = async (context: Context, req: Request) => {
         message.addText(`Merricks currently has a total of ${result.total_orders} portraits, with ${unshipped.current_count} left to ship.`);
     }
 
-    context.res = {
-        status: 200,
-        body: message.get()
-    }
-
-    return context.done();
+    return response.setBody(message.get()).send();
 };

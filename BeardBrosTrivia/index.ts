@@ -1,4 +1,5 @@
 import * as Constants from './constants';
+import Respond from '../modules/respond';
 import { Context, Request } from 'azure-functions';
 import alexa = require("alexa-message-builder");
 
@@ -6,19 +7,10 @@ function getRandomArrayValue<T>(array: T[]) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-export = async (context, req) => {
+export = async (context: Context, req: Request) => {
     context.log('JavaScript HTTP trigger function processed a request.');
 
-    function respond(message: string, status?: number) {
-        status = typeof (status) === "number" ? status : 200;
-
-        context.res = {
-            body: new alexa().addText(message).get()
-        }
-
-        return context.done();
-    }
-
+    const response = Respond(context);
     const query = req.query || {};
     const body = req.body || {};
     const quote = getRandomArrayValue(Constants.quotes);
@@ -51,5 +43,5 @@ export = async (context, req) => {
     // Replace "Jirard" with "Gerard" to get Alexa to pronounce it correctly
     message = message.replace(/jirard/ig, "Gerard");
 
-    return respond(message.trim());
+    return response.setBody(message.trim()).send();
 };

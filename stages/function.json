@@ -1,4 +1,5 @@
 {
+ "disabled": false,
  "bindings": [
   {
    "authLevel": "function",
@@ -12,9 +13,8 @@
    "name": "res"
   }
  ],
- "disabled": false,
  "_originalEntryPoint": false,
  "_originalScriptFile": "index.js",
  "scriptFile": "../.funcpack/index.js",
- "entryPoint": "Gumroadie"
+ "entryPoint": "stages"
 }

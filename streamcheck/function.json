@@ -1,10 +1,12 @@
 {
+ "disabled": false,
  "bindings": [
   {
    "authLevel": "function",
    "type": "httpTrigger",
    "direction": "in",
-   "name": "req"
+   "name": "req",
+   "route": "{path*}"
   },
   {
    "type": "http",
@@ -12,9 +14,8 @@
    "name": "res"
   }
  ],
- "disabled": false,
  "_originalEntryPoint": false,
  "_originalScriptFile": "index.js",
  "scriptFile": "../.funcpack/index.js",
- "entryPoint": "Gumroadie"
+ "entryPoint": "streamcheck"
 }

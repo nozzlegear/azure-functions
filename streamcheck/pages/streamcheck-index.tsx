@@ -1,5 +1,5 @@
-import * as React from "react";
-import Html from "./html-body";
+import * as React from 'react';
+import Html from './html-body';
 
 export interface IProps extends React.Props<React.StatelessComponent<IProps>> {
     target_url: string;
@@ -37,7 +37,7 @@ const STYLES = {
         touchAction: `manipulation`,
         cursor: `pointer`,
         textTransform: `none`,
-        overflow: `visible`,
+        overflow: "visible",
         textDecoration: `none`,
         textAlign: `center`,
     } as React.CSSProperties,
