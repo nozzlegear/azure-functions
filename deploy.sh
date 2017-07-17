@@ -5,6 +5,9 @@
 fileName="deployment.zip"
 apiUrl="https://nozzlegear-alexa.scm.azurewebsites.net/api/zip/site/wwwroot"
 
+# Seem to be running into some kind of cache issue that doesn't overwrite the previous deployment.zip, so we'll delete that.
+rm $fileName
+
 zip -r $fileName . -x node_modules/\* .git/\* >/dev/null
 curl -X PUT --data-binary "@$fileName" --user "$AZURE_FUNC_USERNAME:$AZURE_FUNC_PASSWORD" $apiUrl
 
