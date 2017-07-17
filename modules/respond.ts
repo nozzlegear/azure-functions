@@ -1,4 +1,4 @@
-import { Context } from 'azure-functions';
+import { Context, Response as FunctionResponse } from 'azure-functions';
 import alexaMessage = require("alexa-message-builder");
 
 class Response {
@@ -97,7 +97,7 @@ class Response {
      * Finalizes the response and sends it to the recipient. Will not call context.done() by default. 
      * @param callDone Whether to call context.done() after sending the response. When running in an Azure function you should either return a promise *or* call context.done, not both.
      */
-    send(this: Response, callDone = false): boolean {
+    send(this: Response, callDone = false): FunctionResponse {
         this.context.res = this._redirect && this._redirect.to ? {
             status: this._redirect.permanent ? 301 : 302,
             headers: { ...this._headers, "Location": this._redirect.to, "Content-Type": undefined },
@@ -112,7 +112,7 @@ class Response {
             this.context.done();
         }
 
-        return true;
+        return this.context.res;
     }
 }
 

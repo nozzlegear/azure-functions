@@ -1,8 +1,8 @@
-import { Context, Request } from 'azure-functions';
+import { Context, Request, Response as FunctionResponse } from 'azure-functions';
 import { Respond } from '../modules/respond';
 import alexa = require("alexa-message-builder");
 
-export = async (context: Context, req: Request): Promise<boolean> => {
+export = async (context: Context, req: Request): Promise<FunctionResponse> => {
     context.log('JavaScript HTTP trigger function processed a request.');
 
     const response = Respond(context);

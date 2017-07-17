@@ -1,13 +1,13 @@
 import * as Constants from './constants';
 import Respond from '../modules/respond';
-import { Context, Request } from 'azure-functions';
+import { Context, Request, Response as FunctionResponse } from 'azure-functions';
 import alexa = require("alexa-message-builder");
 
 function getRandomArrayValue<T>(array: T[]) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-export = async (context: Context, req: Request) => {
+export = async (context: Context, req: Request): Promise<FunctionResponse> => {
     context.log('JavaScript HTTP trigger function processed a request.');
 
     const response = Respond(context);
