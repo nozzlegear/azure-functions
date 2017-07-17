@@ -255,7 +255,7 @@ export const quotes = [
         "by": "Jirard"
     },
     {
-        "quote": "I sit with you and play all these hard games, and all I do is encourage you the whole time for hours and hours and hours and hours! And I'm sitting here playing ONE hard game, and all that happens is 'oh this dude sucks at this game! oh he sucks, I've been trying not to yell at him about how much he sucks! Thank God somebody finally told him he sucks! I wanna be the guy, Jirard!'",
+        "quote": "I sit with you and play all these hard games, and all I do is encourage you the whole time for hours and hours and hours and hours! And I'm sitting here playing one hard game, and all that happens is 'oh, this dude sucks at this game! oh he sucks, I've been trying not to yell at him about how much he sucks! Thank God somebody finally told him he sucks!'... I wanna be the guy Jirard!",
         "by": "Alex"
     }
 ]
