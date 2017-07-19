@@ -1,15 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Azure.WebJobs;
-using Microsoft.ProjectOxford.Vision;
-using Newtonsoft.Json.Linq;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using System.Net;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 
 namespace BeardBrosTrivia
 {
@@ -18,7 +11,10 @@ namespace BeardBrosTrivia
         [FunctionName("BeardBrosTrivia")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "GET", WebHookType = "genericJson")] HttpRequestMessage req)
         {
-            return req.CreateResponse("Hello nerd");
+            return req.CreateResponse(new
+            {
+                Hello = "world"
+            });
         }
     }
 }
