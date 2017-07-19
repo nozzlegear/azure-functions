@@ -34,6 +34,7 @@ node_modules
 
 # Ignore built files
 bin/
+obj/
 wwwroot/
 dist/
 alexa-skills-linux
@@ -54,3 +55,6 @@ config.json
 
 # Ignore TS build cache
 .awcache/
+
+# Ignore VS files
+.vs

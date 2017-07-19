@@ -1,20 +1,18 @@
 {
- "bindings": [
-  {
-   "authLevel": "function",
-   "name": "req",
-   "type": "httpTrigger",
-   "direction": "in"
-  },
-  {
-   "name": "$return",
-   "type": "http",
-   "direction": "out"
-  }
- ],
- "disabled": false,
- "_originalEntryPoint": false,
- "_originalScriptFile": "index.js",
- "scriptFile": "../.funcpack/index.js",
- "entryPoint": "BeardBrosTrivia"
+  "disabled": false,
+  "bindings": [
+    {
+      "authLevel": "function",
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in"
+    },
+    {
+      "name": "$return",
+      "type": "http",
+      "direction": "out"
+    }
+  ],
+  "scriptFile": "./bin/Release/net461/BeardBrosTrivia.dll",
+  "entryPoint": "BeardBrosTrivia.TriviaBoi.Run"
 }
