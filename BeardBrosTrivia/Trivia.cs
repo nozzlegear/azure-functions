@@ -26,20 +26,36 @@ namespace BeardBrosTrivia
     public class TriviaBoi
     {
         [FunctionName("BeardBrosTrivia")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "*", WebHookType = "genericJson")] HttpRequestMessage req, TraceWriter log, [FromUri] bool test = false)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "*", WebHookType = "genericJson")] HttpRequestMessage req, TraceWriter log)
         {
             log.Info("BeardBrosTrivia function running.");
 
             var validator = new RequestValidator();
+            bool test = false;
             AlexaRequest alexaRequest;
 
-            if (!test)
+            // Check if the querystring contains test=true
+            if (req.RequestUri.Query.IndexOf("test=true", StringComparison.OrdinalIgnoreCase) > -1)
             {
-                alexaRequest = await validator.ParseAndValidate(req);
+                test = true;
             }
-            else
+
+            try
             {
-                alexaRequest = await validator.Parse(req);
+                if (!test)
+                {
+                    alexaRequest = await validator.ParseAndValidate(req);
+                }
+                else
+                {
+                    alexaRequest = await validator.Parse(req);
+                }
+            }
+            catch (RequestValidationException ex)
+            {
+                log.Error("Error validating request.", ex);
+
+                throw ex;
             }
 
             string reqBody = await req.Content.ReadAsStringAsync();
