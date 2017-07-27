@@ -30,9 +30,11 @@ namespace BeardBrosTrivia
         {
             log.Info("BeardBrosTrivia function running.");
 
-            var validator = new RequestValidator();
+            var validator = new RequestValidator(log);
             bool test = false;
             AlexaRequest alexaRequest;
+
+            log.Info($"Querystring: {req.RequestUri.Query}");
 
             // Check if the querystring contains test=true
             if (req.RequestUri.Query.IndexOf("test=true", StringComparison.OrdinalIgnoreCase) > -1)
@@ -40,41 +42,24 @@ namespace BeardBrosTrivia
                 test = true;
             }
 
-            try
+            if (!test)
             {
-                if (!test)
+                try
                 {
                     alexaRequest = await validator.ParseAndValidate(req);
                 }
-                else
+                catch (RequestValidationException ex)
                 {
-                    alexaRequest = await validator.Parse(req);
+                    log.Error("Error validating request.", ex);
+
+                    throw ex;
                 }
-            }
-            catch (RequestValidationException ex)
-            {
-                log.Error("Error validating request.", ex);
 
-                throw ex;
-            }
-
-            string reqBody = await req.Content.ReadAsStringAsync();
-            JObject parsedBody = JObject.Parse(reqBody);
-            JToken sessionDetailToken;
-
-            if (!test && parsedBody.TryGetValue("session", out sessionDetailToken))
-            {
-                SessionDetails details = sessionDetailToken.ToObject<SessionDetails>();
-
-                log.Info($"Alexa Session id: {details.sessionId}.");
-            }
-            else if (!test)
-            {
-                return req.CreateErrorResponse(HttpStatusCode.NotAcceptable, "");
+                // TODO: If your skill supports multiple different intents, use the alexaRequest variable to determine which intent has been requested.
             }
             else
             {
-                log.Warning($"Received a request that didn't contain an Alexa session details object.");
+                log.Info("Running function in test mode.");
             }
 
             Quote quote = GetRandomArrayValue(Constants.Quotes);

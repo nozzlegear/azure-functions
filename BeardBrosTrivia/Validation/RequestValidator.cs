@@ -16,9 +16,11 @@ namespace BeardBrosTrivia.Validation
 {
     public class RequestValidator
     {
-        public RequestValidator()
-        {
+        TraceWriter Log { get; }
 
+        public RequestValidator(TraceWriter log)
+        {
+            Log = log;
         }
 
         /// <summary>
@@ -41,10 +43,14 @@ namespace BeardBrosTrivia.Validation
             //   g. Use the cert's public key to decrypt the decoded [Signature] header and produce the [Asserted Hash] value.
             //   h. Generate  SHA-1 hash from the full HTTPS body to produce the [Derived Hash] value.
             //   i. Signature is valid if [Derived Hash] == [Asserted Hash].
-            long timestamp = (long)(TimeZoneInfo.ConvertTimeToUtc(DateTime.Now) - new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)).TotalSeconds;
+
+            Log.Info($"Raw alexa request timestamp: {alexaRequest.request.timestamp}");
+
+            long now = DateTime.Now.ToUnixTimestamp();
+            long requestTime = alexaRequest.request.timestamp;
 
             // Alexa skills should be invalidated after 150 seconds have passed.
-            if (timestamp - alexaRequest.request.timestamp > 150)
+            if (now - requestTime > 150)
             {
                 throw new RequestValidationException("Request's timestamp is over 150 seconds old, which is invalid.");
             }
@@ -70,7 +76,11 @@ namespace BeardBrosTrivia.Validation
                 throw new RequestValidationException("Request headers did not contain the required Signature header.");
             }
 
+            Log.Info($"Signature and certChainUrl headers were retrieved.");
+
             var cert = await GetAndValidateCertificate(certChainUrl);
+
+            Log.Info($"Got certificate. Is null? {cert == null}");
 
             if (!VerifySignature(reqBody, signature, cert))
             {
@@ -98,6 +108,11 @@ namespace BeardBrosTrivia.Validation
             catch (Exception ex)
             {
                 throw new RequestValidationException("Failed to parse request body into an AlexaRequest.", ex);
+            }
+
+            if (requestData == null)
+            {
+                throw new RequestValidationException("Failed to parse request body into an AlexaRequest. The deserialized object was null.");
             }
 
             return requestData;
