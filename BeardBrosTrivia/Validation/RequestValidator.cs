@@ -47,10 +47,19 @@ namespace BeardBrosTrivia.Validation
             Log.Info($"Raw alexa request timestamp: {alexaRequest.request.timestamp}");
 
             long now = DateTime.Now.ToUnixTimestamp();
-            long requestTime = alexaRequest.request.timestamp;
+            long requestTimeTicks;
+
+            if (alexaRequest.request.timestamp.GetType() == typeof(DateTime))
+            {
+                requestTimeTicks = ((DateTime)alexaRequest.request.timestamp).ToUnixTimestamp();
+            }
+            else
+            {
+                requestTimeTicks = ((long)alexaRequest.request.timestamp);
+            }
 
             // Alexa skills should be invalidated after 150 seconds have passed.
-            if (now - requestTime > 150)
+            if (now - requestTimeTicks > 150)
             {
                 throw new RequestValidationException("Request's timestamp is over 150 seconds old, which is invalid.");
             }

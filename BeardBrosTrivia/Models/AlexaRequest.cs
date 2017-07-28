@@ -44,7 +44,7 @@ namespace BeardBrosTrivia.Models
         public string requestId { get; set; }
         public string locale { get; set; }
         public string type { get; set; }
-        public long timestamp { get; set; }
+        public object timestamp { get; set; }
         public Intent intent { get; set; }
     }
 
