@@ -79,4 +79,6 @@ export = async (context: Context, timer) => {
 
     // Write updated history back to the history file.
     fs.writeFileSync(fileLocation, JSON.stringify(history));
+
+    context.log("Twitter Rollup finished. See you tomorrow!")
 };
