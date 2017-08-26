@@ -9,13 +9,14 @@ apiUrl="https://nozzlegear-alexa.scm.azurewebsites.net/api/zip/site/wwwroot"
 rm $fileName
 
 zip -r $fileName . -x node_modules/\* \*.zip .git/\* */obj/\* >/dev/null
+echo "Zipped files, uploading to Azure..."
 curl -X PUT --data-binary "@$fileName" --user "$AZURE_FUNC_USERNAME:$AZURE_FUNC_PASSWORD" $apiUrl
 
 lastExitCode=$?
 
 if [ $lastExitCode -ne 0 ]; then
   echo "Deployment failed!"
-else 
+else
   echo "Deployment was successful."
 fi
 
