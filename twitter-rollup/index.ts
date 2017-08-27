@@ -53,6 +53,7 @@ export = async (context: Context, timer) => {
         "terrajobst",
         "nolanlawson",
         "JenMsft",
+        "noopkat",
         "oss_csharp",
         "oss_fsharp",
         "oss_js",
