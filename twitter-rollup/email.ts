@@ -1,8 +1,49 @@
 import * as Bluebird from 'bluebird';
 import * as Twitter from 'twitter';
+import BaseClient from 'gearworks-http';
+import { Context } from 'azure-functions';
 import { createTransport } from 'nodemailer';
 
 export type UserTweets = { [username: string]: Twitter.Tweet[] }
+
+export interface SendWithUsRecipient {
+    name?: string
+    address: string
+}
+
+export interface SendWithUsSender extends SendWithUsRecipient {
+    replyTo: string
+}
+
+export interface SendWithUsMessage {
+    template: string
+    recipient: SendWithUsRecipient
+    sender: SendWithUsSender
+    template_data: {
+        html: string
+        subject: string
+        preview_text: string
+    }
+}
+
+export interface SendConfig {
+    sender: string
+    recipient: string
+    sendWithUsKey: string
+    sendWithUsTemplateId: string
+}
+
+export class SendWithUsClient extends BaseClient {
+    constructor(apiKey: string) {
+        super("https://api.sendwithus.com/api/v1/", {
+            Authorization: "Basic " + new Buffer(`${apiKey}:`).toString("base64")
+        })
+    }
+
+    public send(message: SendWithUsMessage) {
+        return this.sendRequest<any>("send", "POST", { body: message })
+    }
+}
 
 export function prepareTweetHtml(tweet: Twitter.Tweet) {
     const strings: string[] = [];
@@ -60,7 +101,7 @@ export function prepareTweetHtml(tweet: Twitter.Tweet) {
     return `<div style='padding: 10px 0; border-bottom: 1px solid #ccc;'>${strings.join(" ")}</div>`;
 }
 
-export function sendRollup(sender: string, recipient: string, tweets: UserTweets, sparkpostKey: string) {
+export function sendRollup(tweets: UserTweets, config: SendConfig) {
     const html = "<h1>Daily Twitter Roundup</h1><p>Sorted by user, oldest to newest.</p>" + Object.getOwnPropertyNames(tweets).reduce((html, username) => {
         const userTweets = tweets[username];
 
@@ -70,35 +111,23 @@ export function sendRollup(sender: string, recipient: string, tweets: UserTweets
 
         return html + userTweets.map(prepareTweetHtml).join("\n");
     }, "");
-
-    return new Bluebird((res, rej) => {
-        const message = {
-            content: {
-                from: {
-                    name: "Twitter Rollup",
-                    email: sender,
-                },
-                subject: `Twitter rollup for ${new Date().toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}.`,
-                html: html,
-            },
-            recipients: [{
-                address: {
-                    email: recipient,
-                }
-            }]
+    const message: SendWithUsMessage = {
+        recipient: {
+            address: config.recipient,
+        },
+        sender: {
+            address: config.sender,
+            replyTo: config.sender,
+            name: "Twitter Rollup"
+        },
+        template: config.sendWithUsTemplateId,
+        template_data: {
+            html,
+            preview_text: "Your daily roundup email containing all of the latest tweets from the people you care about.",
+            subject: `Twitter rollup for ${new Date().toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}.`
         }
+    }
+    const client = new SendWithUsClient(config.sendWithUsKey);
 
-        //Send the roundup email
-        const transporter = createTransport({ transport: 'sparkpost', sparkPostApiKey: sparkpostKey } as any);
-
-        transporter.sendMail(message as any, (error, info) => {
-            if (error) {
-                rej(error);
-
-                return;
-            }
-
-            res(info);
-        });
-    })
+    return client.send(message);
 }

@@ -1,6 +1,7 @@
 import * as Bluebird from 'bluebird';
 import * as Constants from '../modules/constants';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as Twitter from 'twitter';
 import * as util from 'util';
 import { Context } from 'azure-functions';
@@ -24,10 +25,16 @@ export = async (context: Context, timer) => {
         context.log('Twitter Rollup is running.');
     }
 
-    const fileLocation = "./tweet-history.json";
+    const fileLocation = path.join(__dirname, "tweet-history.json");
+    const client = new Twitter({
+        consumer_key: envRequired("TWITTER_CONSUMER_KEY"),
+        consumer_secret: envRequired("TWITTER_CONSUMER_SECRET"),
+        bearer_token: envRequired("TWITTER_BEARER_TOKEN"),
+    })
     const sender = envRequired("TWITTER_ROLLUP_SENDER");
     const recipient = envRequired("TWITTER_ROLLUP_RECIPIENT");
-    const sparkpostApiKey = envRequired("TWITTER_ROLLUP_SPARKPOST_API_KEY");
+    const swuKey = envRequired("TWITTER_ROLLUP_SWU_KEY");
+    const swuTemplateId = envRequired("TWITTER_ROLLUP_SWU_TEMPLATE");
     const usernames = [
         "jessecox",
         "crendor",
@@ -60,7 +67,7 @@ export = async (context: Context, timer) => {
 
     const tweets = await Bluebird.reduce<string, { [username: string]: Twitter.Tweet[] }>(usernames, async (result, username) => {
         const userHistory = history[username];
-        const tweets = await getTweets(context, username, userHistory && userHistory.lastTweetId);
+        const tweets = await getTweets(context, client, username, userHistory && userHistory.lastTweetId);
 
         if (tweets.length > 0) {
             // TODO: Filter out unwanted keywords like "I'm drinking an X" or "I just earned the Y badge"
@@ -72,10 +79,18 @@ export = async (context: Context, timer) => {
     }, {});
 
     try {
-        const send = await sendRollup(sender, recipient, tweets, sparkpostApiKey);
+        const send = await sendRollup(tweets, {
+            recipient,
+            sender,
+            sendWithUsKey: swuKey,
+            sendWithUsTemplateId: swuTemplateId
+        });
+
+        context.log(`Sent email!`)
     } catch (e) {
         context.log("Error sending Twitter Rollup email:", e);
     }
+
 
     // Write updated history back to the history file.
     fs.writeFileSync(fileLocation, JSON.stringify(history));

@@ -258,7 +258,7 @@ axios@^0.15.3:
   dependencies:
     follow-redirects "1.0.0"
 
-axios@^0.16.2:
+axios@^0.16.1, axios@^0.16.2:
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.16.2.tgz#ba4f92f17167dfbab40983785454b9ac149c3c6d"
   dependencies:
@@ -907,6 +907,14 @@ gauge@~2.7.3:
     string-width "^1.0.1"
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
+
+gearworks-http@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/gearworks-http/-/gearworks-http-1.2.0.tgz#9bddaa21b7ce456d990b1ad81a0c080896e5e834"
+  dependencies:
+    axios "^0.16.1"
+    logspect "^1.0.2"
+    url-join "^2.0.2"
 
 gearworks-validation@^1.2.0:
   version "1.2.0"
@@ -2208,6 +2216,10 @@ ua-parser-js@^0.7.9:
 uid-number@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
+
+url-join@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-2.0.2.tgz#c072756967ad24b8b59e5741551caac78f50b8b7"
 
 url@0.10.3:
   version "0.10.3"
