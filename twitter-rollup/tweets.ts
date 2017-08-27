@@ -4,13 +4,18 @@ import { Context } from 'azure-functions';
 
 export function getTweets(context: Context, client: Twitter, username: string, sinceId: number = 1) {
     return new Bluebird<Twitter.Tweet[]>((res, rej) => {
+        // TODO: Allow replies, but only to the list of users that we're following.
         client.get("statuses/user_timeline", { screen_name: username, since_id: sinceId, exclude_replies: true, tweet_mode: "extended" }, (err, tweets, resp) => {
             if (err) {
                 context.log(`Error getting tweets for ${username}.`, { error: err, resp: resp });
             }
 
-            // When using since_id, Twitter will return anything >= the id. Skip the last seen tweet.
-            const filteredTweets = (tweets || []).filter(tweet => tweet.id > sinceId);
+            const filteredTweets =
+                (tweets || [])
+                    // When using since_id, Twitter will return anything >= the id, but we only want anything > id.
+                    .filter(tweet => tweet.id > sinceId)
+                    // Sort from oldest to newest (smallest id to biggest)
+                    .sort((a, b) => a.id - b.id);
 
             // Don't break the app, just return 0 tweets.
             res(filteredTweets);

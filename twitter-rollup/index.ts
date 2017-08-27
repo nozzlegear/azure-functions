@@ -72,7 +72,8 @@ export = async (context: Context, timer) => {
         if (tweets.length > 0) {
             // TODO: Filter out unwanted keywords like "I'm drinking an X" or "I just earned the Y badge"
             result[username] = tweets;
-            history[username] = { lastTweetId: tweets[tweets.length - 1].id };
+            // The last tweet id should be the greatest one.
+            history[username] = { lastTweetId: tweets.reduce((lastId, tweet) => tweet.id > lastId ? tweet.id : lastId, 0) };
         }
 
         return result;
