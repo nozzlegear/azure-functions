@@ -1,0 +1,13 @@
+{
+    "disabled": false,
+    "bindings": [
+        {
+            "name": "RedditRollup",
+            "type": "timerTrigger",
+            "direction": "in",
+            "schedule": "0 0 12 * * *"
+        }
+    ],
+    "scriptFile": "./bin/Release/netcoreapp2.0/reddit-rollup.dll",
+    "entryPoint": "RedditRollup.Program.main"
+}
