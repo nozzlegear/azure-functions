@@ -1,7 +1,7 @@
 {
     "bindings": [
         {
-            "name": "Artist Tally Tool",
+            "name": "artist-tally-tool",
             "type": "timerTrigger",
             "direction": "in",
             "schedule": "0 0 12 * * 1"
