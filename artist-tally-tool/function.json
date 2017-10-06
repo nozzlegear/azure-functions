@@ -1,0 +1,11 @@
+{
+    "bindings": [
+        {
+            "name": "Artist Tally Tool",
+            "type": "timerTrigger",
+            "direction": "in",
+            "schedule": "0 0 12 * * 1"
+        }
+    ],
+    "disabled": false
+}

@@ -1,0 +1,10 @@
+// Only the target frameworks that are used in projects.
+framework: net45
+
+source https://www.nuget.org/api/v2
+nuget fsharp.core
+nuget http.fs
+nuget microsoft.azure.webjobs.extensions
+nuget microsoft.fsharplu
+nuget microsoft.fsharplu.json
+nuget newtonsoft.json

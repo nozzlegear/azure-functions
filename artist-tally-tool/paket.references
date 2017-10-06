@@ -1,0 +1,6 @@
+fsharp.core
+microsoft.fsharplu
+newtonsoft.json
+Microsoft.Azure.WebJobs.Extensions
+Microsoft.Fsharplu.Json
+http.fs
