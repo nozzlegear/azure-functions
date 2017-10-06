@@ -32,7 +32,7 @@
     "@types/nodemailer-smtp-transport": "^2.7.3",
     "@types/react-dom": "^15.5.1",
     "@types/webpack": "^3.0.2",
-    "azure-functions-pack": "^0.2.2",
+    "azure-functions-pack": "0.3.1",
     "rimraf": "^2.6.1",
     "ts-node": "^3.2.0",
     "typescript": "^2.4.1"
