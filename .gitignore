@@ -58,3 +58,7 @@ config.json
 
 # Ignore VS files
 .vs
+
+# Ignore paket files
+packages/
+paket-files/
