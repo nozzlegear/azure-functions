@@ -1,7 +1,9 @@
 {
+    "scriptFile": ".\\bin\\Release\\netstandard2.0\\ArtistTallyTool.dll",
+    "entryPoint": "ArtistTallyTool.AzureFunction.Run",
     "bindings": [
         {
-            "name": "artist-tally-tool",
+            "name": "myTimer",
             "type": "timerTrigger",
             "direction": "in",
             "schedule": "0 0 12 * * 1"
