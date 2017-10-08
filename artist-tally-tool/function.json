@@ -1,5 +1,5 @@
 {
-    "scriptFile": ".\\bin\\Release\\netstandard2.0\\ArtistTallyTool.dll",
+    "scriptFile": ".\\bin\\Release\\netstandard2.0\\publish\\ArtistTallyTool.dll",
     "entryPoint": "ArtistTallyTool.AzureFunction.Run",
     "bindings": [
         {
