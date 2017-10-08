@@ -16,11 +16,13 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 :: Verify yarn installed
-where yarn 2>nul >null
+where yarn 2>nul >nul
 IF %ERRORLEVEL% NEQ 0 (
   echo "Missing yarn, installing via npm"
   npm i -g yarn
 )
+
+echo "Yarn installed, continuing to deployment"
 
 :: Setup
 :: -----
