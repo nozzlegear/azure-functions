@@ -11,7 +11,6 @@ module public AzureFunction =
     open Microsoft.FSharpLu.Json
     open HttpFs.Client
     open Hopac
-    open Newtonsoft.Json
 
     type TallyResponse = {
         since: int64
@@ -74,7 +73,7 @@ module public AzureFunction =
         let message = 
             Request.createUrl method url
             |> ifOptionIsSome body (fun body message -> 
-                let serializedBody = JsonConvert.SerializeObject body
+                let serializedBody = Compact.serialize body
                 let contentTypeHeader = 
                     ContentType.parse "application/json" 
                     |> Option.get 
@@ -161,7 +160,7 @@ module public AzureFunction =
             prepareRequest HttpMethod.Post url (Some header) (Some message)
             |> sendRequest
         
-        return response |> JsonConvert.DeserializeObject<SwuResponse>
+        return response |> Compact.deserialize<SwuResponse>
     }
 
     [<Microsoft.Azure.WebJobs.FunctionNameAttribute("std-artist-tally-tool")>]
@@ -186,7 +185,7 @@ module public AzureFunction =
             prepareRequest HttpMethod.Get url None None
             |> sendRequest
             |> run
-            |> JsonConvert.DeserializeObject<TallyResponse>
+            |> Compact.deserialize<TallyResponse>
 
         match summaryResponse.summary.Count with
         | 0 -> 
