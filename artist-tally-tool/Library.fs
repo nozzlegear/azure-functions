@@ -8,7 +8,7 @@ module public AzureFunction =
     open Microsoft.Azure.WebJobs
     open Microsoft.Azure.WebJobs.Host
     open Microsoft.Azure.WebJobs.Extensions
-    open Microsoft.FSharpLu.Json
+    open Newtonsoft.Json
     open HttpFs.Client
     open Hopac
 
@@ -73,7 +73,7 @@ module public AzureFunction =
         let message = 
             Request.createUrl method url
             |> ifOptionIsSome body (fun body message -> 
-                let serializedBody = Compact.serialize body
+                let serializedBody = JsonConvert.SerializeObject body
                 let contentTypeHeader = 
                     ContentType.parse "application/json" 
                     |> Option.get 
@@ -160,13 +160,13 @@ module public AzureFunction =
             prepareRequest HttpMethod.Post url (Some header) (Some message)
             |> sendRequest
         
-        return response |> Compact.deserialize<SwuResponse>
+        return response |> JsonConvert.DeserializeObject<SwuResponse>
     }
 
     // [<Microsoft.Azure.WebJobs.FunctionNameAttribute("std-artist-tally-tool")>]
     let public Run(myTimer: TimerInfo, log: TraceWriter) =
         
-        sprintf "Artist Tally Tool in a dotnet netstandard2.0 library is executing at: %s" (DateTime.Now.ToString())
+        sprintf "Artist Tally Tool executing at: %s" (DateTime.Now.ToString())
         |> log.Info
 
         let apiDomain = envVarDefault "ARTIST_TALLY_API_DOMAIN" "localhost:3000"
@@ -189,7 +189,7 @@ module public AzureFunction =
             prepareRequest HttpMethod.Get url None None
             |> sendRequest
             |> run
-            |> Compact.deserialize<TallyResponse>
+            |> JsonConvert.DeserializeObject<TallyResponse>
 
         match summaryResponse.summary.Count with
         | 0 -> 
