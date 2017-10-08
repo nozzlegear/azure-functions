@@ -163,7 +163,7 @@ module public AzureFunction =
         return response |> Compact.deserialize<SwuResponse>
     }
 
-    [<Microsoft.Azure.WebJobs.FunctionNameAttribute("std-artist-tally-tool")>]
+    // [<Microsoft.Azure.WebJobs.FunctionNameAttribute("std-artist-tally-tool")>]
     let public Run(myTimer: TimerInfo, log: TraceWriter) =
         
         sprintf "Artist Tally Tool in a dotnet netstandard2.0 library is executing at: %s" (DateTime.Now.ToString())
