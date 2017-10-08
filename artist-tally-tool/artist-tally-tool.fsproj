@@ -14,4 +14,4 @@
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="3.0.0-beta3" />
     <PackageReference Include="microsoft.fsharplu.json" Version="0.10.3" />
   </ItemGroup>
-</Project> 
+</Project>
