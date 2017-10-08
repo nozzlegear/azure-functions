@@ -170,6 +170,10 @@ module public AzureFunction =
         |> log.Info
 
         let apiDomain = envVarDefault "ARTIST_TALLY_API_DOMAIN" "localhost:3000"
+
+        sprintf "The API domain being used is: %s" apiDomain
+        |> log.Info
+
         let startDate = midnightYesterday ()
         let endDate = midnight ()
         let protocol = if String.contains "localhost" apiDomain then "http" else "https"
