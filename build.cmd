@@ -15,6 +15,13 @@ IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
 
+:: Verify yarn installed
+where yarn 2>nul >null
+IF %ERRORLEVEL% NEQ 0 (
+  echo "Missing yarn, installing via npm"
+  npm i -g yarn
+)
+
 :: Setup
 :: -----
 
@@ -51,19 +58,15 @@ IF NOT DEFINED KUDU_SYNC_CMD (
 :: Deployment
 :: ----------
 echo Handling function App deployment with custom build.cmd script.
-
 echo "build.cmd running in directory %cd%"
 
+:: Restore dotnet packages and build dotnet projects
 dotnet restore
 dotnet build -c Release
 
-REM :: 1. Restore nuget packages
-REM call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\artist-tally-tool.sln" -MSBuildPath "%MSBUILD_15_DIR%"
-REM IF !ERRORLEVEL! NEQ 0 goto error
-
-REM :: 2. Build and publish
-REM call :ExecuteCmd "%MSBUILD_15_DIR%\MSBuild.exe" "%DEPLOYMENT_SOURCE%\std-artist-tally-tool\std-artist-tally-tool.fsproj" /p:DeployOnBuild=true /p:configuration=Release /p:publishurl="%DEPLOYMENT_TEMP%" %SCM_BUILD_ARGS%
-REM IF !ERRORLEVEL! NEQ 0 goto error
+:: Restore node packages and build node projects
+yarn install
+yarn build
 
 :: 3. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
