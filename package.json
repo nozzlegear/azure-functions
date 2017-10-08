@@ -39,7 +39,7 @@
   },
   "scripts": {
     "prebuild": "rimraf .funcpack",
-    "build": "tsc -p . && funcpack pack ./ && powershell.exe -c 'dotnet build -c release'",
+    "build": "tsc -p . && funcpack pack",
     "predeploy": "npm run build",
     "deploy": "./deploy.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
