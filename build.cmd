@@ -65,12 +65,14 @@ echo Handling function App deployment with custom build.cmd script.
 echo "build.cmd running in directory %cd%"
 
 :: Restore dotnet packages and build dotnet projects
-dotnet restore
-dotnet build -c Release
+call dotnet restore
+call dotnet build -c Release
+IF !ERRORLEVEL! NEQ 0 goto error
 
 :: Restore node packages and build node projects
-yarn install
-yarn build
+call yarn install
+call yarn build
+IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
