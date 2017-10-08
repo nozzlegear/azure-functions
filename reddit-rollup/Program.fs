@@ -102,11 +102,15 @@ module Program =
             "https://api.sendwithus.com/api/v1/send".AllowAnyHttpStatus().WithHeader("X-SWU-API-KEY", swuApiKey).PostJsonAsync
             <|
                 {
+                    Files = []
+                    CC = []
+                    BCC = []
                     EmailId = swuTemplateId
                     Recipient =
                         {
                             Name = "Joshua Harms"
                             Address = "nozzlegear@outlook.com"
+                            ReplyTo = "nozzlegear@outlook.com"
                         }
                     Sender =
                         {
@@ -125,27 +129,11 @@ module Program =
             |> Async.AwaitTask
             |> Async.RunSynchronously
 
-        let tryCatchResult =
-            try
-                result.EnsureSuccessStatusCode() |> ignore
+        result.EnsureSuccessStatusCode() |> ignore
 
-                None
-            with e ->
-                let output =
-                    {
-                        Status = result.StatusCode.ToString()
-                        Success = false
-                        ErrorMessage = sprintf "SendWithUs API request failed with %i %s. %s" result.StatusCode result.ReasonPhrase e.Message
-                    }
-
-                Some output
-
-        match tryCatchResult with
-        | Some output -> output
-        | None ->
-            request.ReceiveJson<SendWithUsResponse>()
-            |> Async.AwaitTask
-            |> Async.RunSynchronously
+        request.ReceiveJson<SendWithUsResponse>()
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
 
     [<EntryPoint>]
     [<FunctionName("RedditRollup")>]
