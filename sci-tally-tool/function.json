@@ -1,6 +1,6 @@
 {
     "scriptFile": ".\\bin\\Release\\net461\\publish\\SciTallyTool.dll",
-    "entryPoint": "SciTallyTool.AzureFunction.Run",
+    "entryPoint": "SciTallyTool.Run",
     "bindings": [
         {
             "name": "myTimer",
