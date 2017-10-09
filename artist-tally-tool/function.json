@@ -6,7 +6,7 @@
             "name": "myTimer",
             "type": "timerTrigger",
             "direction": "in",
-            "schedule": "0 0 12 * * 1"
+            "schedule": "0 0 12 * * 2-6"
         }
     ],
     "disabled": false
