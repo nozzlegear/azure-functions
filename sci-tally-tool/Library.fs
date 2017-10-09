@@ -13,6 +13,11 @@ module SciTallyTool
 
     type Tally = Dictionary<string, int>
 
+    type TallyTemplate = {
+        source: string
+        count: int
+    }
+
     type SwuRecipient = {
         name: string
         address: string
@@ -26,7 +31,7 @@ module SciTallyTool
 
     type SwuTallyTemplateData = {
         date: string
-        tally: Tally
+        tally: TallyTemplate list
     }
 
     type SwuMessage = {
@@ -89,7 +94,7 @@ module SciTallyTool
 
     let toJsTimestamp date = DateTimeOffset(date).ToUnixTimeMilliseconds()
 
-    let sendEmailMessage (tallyStartDate: DateTime) (tally: Tally) = job {
+    let sendEmailMessage (tallyStartDate: DateTime) (tally: TallyTemplate list) = job {
         let emailDomain = envVarRequired "SCI_TALLY_EMAIL_DOMAIN"
         let isLive = (envVarDefault "SCI_TALLY_ENV" "development") = "production"
         let swuKey = envVarRequired "SCI_TALLY_SWU_KEY"
@@ -186,6 +191,8 @@ module SciTallyTool
         let emailResponse =
             try 
                 summaryResponse
+                |> Seq.map (fun kvp -> { source = kvp.Key; count = kvp.Value })
+                |> List.ofSeq
                 |> sendEmailMessage startDate
                 |> run
             with 
