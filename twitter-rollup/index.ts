@@ -35,29 +35,7 @@ export = async (context: Context, timer) => {
     const recipient = envRequired("TWITTER_ROLLUP_RECIPIENT");
     const swuKey = envRequired("TWITTER_ROLLUP_SWU_KEY");
     const swuTemplateId = envRequired("TWITTER_ROLLUP_SWU_TEMPLATE");
-    const usernames = [
-        "jessecox",
-        "crendor",
-        "jkcompletesit",
-        "facianea",
-        "akamikeb",
-        "explainxkcd",
-        "csallen",
-        "patio11",
-        "wesbos",
-        "mpjme",
-        "thelarkinn",
-        "ken_wheeler",
-        "davidfowl",
-        "damianedwards",
-        "terrajobst",
-        "nolanlawson",
-        "JenMsft",
-        "noopkat",
-        "oss_csharp",
-        "oss_fsharp",
-        "oss_js",
-    ];
+    const follows = envRequired("TWITTER_ROLLUP_FOLLOWS").split(",").filter(username => !!username).map(username => username.trim())
     let history: { [username: string]: { "lastTweetId": number } };
 
     if (fs.existsSync(fileLocation)) {
@@ -66,7 +44,7 @@ export = async (context: Context, timer) => {
         history = {};
     }
 
-    const tweets = await Bluebird.reduce<string, { [username: string]: Twitter.Tweet[] }>(usernames, async (result, username) => {
+    const tweets = await Bluebird.reduce<string, { [username: string]: Twitter.Tweet[] }>(follows, async (result, username) => {
         const userHistory = history[username];
         let tweets: Twitter.Tweet[] = []
 
