@@ -1,0 +1,4 @@
+Microsoft.Azure.WebJobs.Extensions
+Newtonsoft.json
+FSharp.Core
+Flurl.Http

@@ -64,6 +64,10 @@ IF NOT DEFINED KUDU_SYNC_CMD (
 echo Handling function App deployment with custom build.cmd script.
 echo "build.cmd running in directory %cd%"
 
+:: Bootstrap packet
+.paket\paket.bootstrapper.exe
+IF !ERRORLEVEL! NEQ 0 goto error
+
 :: Restore dotnet packages and publish dotnet projects
 call dotnet restore
 call dotnet publish -c Release

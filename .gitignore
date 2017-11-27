@@ -62,3 +62,6 @@ config.json
 # Ignore paket files
 packages/
 paket-files/
+.paket/paket.exe
+.paket/paket.exe.config
+.paket/paket.targets
