@@ -68,7 +68,13 @@ export = async (context: Context, timer) => {
 
     const tweets = await Bluebird.reduce<string, { [username: string]: Twitter.Tweet[] }>(usernames, async (result, username) => {
         const userHistory = history[username];
-        const tweets = await getTweets(context, client, username, userHistory && userHistory.lastTweetId);
+        let tweets: Twitter.Tweet[] = []
+
+        try {
+            tweets = await getTweets(context, client, username, userHistory && userHistory.lastTweetId);
+        } catch (e) {
+            console.error(`Error getting tweets for username ${username}.`, e)
+        }
 
         if (tweets.length > 0) {
             // TODO: Filter out unwanted keywords like "I'm drinking an X" or "I just earned the Y badge"
