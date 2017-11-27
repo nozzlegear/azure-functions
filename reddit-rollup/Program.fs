@@ -39,7 +39,7 @@ module Program =
         resolution.height < 700 && resolution.height > 300
 
     let getTopPosts (count: int) (subreddit: string) =
-        use client = Flurl.Url.Combine("https://www.reddit.com", sprintf "r/{%s}/top.json?sort=top&t=day" subreddit).AllowAnyHttpStatus()
+        let client = Flurl.Url.Combine("https://www.reddit.com", sprintf "r/{%s}/top.json?sort=top&t=day" subreddit).AllowAnyHttpStatus()
         let request = client.GetAsync()
         let result =
             request
