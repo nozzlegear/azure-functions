@@ -13,6 +13,6 @@
       "direction": "out"
     }
   ],
-  "scriptFile": "./bin/Release/net461/BeardBrosTrivia.dll",
+  "scriptFile": "./publish/BeardBrosTrivia.dll",
   "entryPoint": "BeardBrosTrivia.TriviaBoi.Run"
 }
