@@ -144,7 +144,7 @@ module RedditRollup
         |> Async.RunSynchronously
         |> JsonConvert.DeserializeObject<SendWithUsResponse>
 
-    let Send(myTimer: TimerInfo, log: TraceWriter) =
+    let public Send(myTimer: TimerInfo, log: TraceWriter) =
         subs
         |> Seq.map(getTopPosts 3)
         |> Seq.collect(id)
