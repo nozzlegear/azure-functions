@@ -2,7 +2,7 @@
     "disabled": false,
     "bindings": [
         {
-            "name": "RedditRollup",
+            "name": "myTimer",
             "type": "timerTrigger",
             "direction": "in",
             "schedule": "0 0 12 * * *"
