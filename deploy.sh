@@ -120,12 +120,6 @@ fi
 
 echo "Handling deployment from directory $PWD."
 
-syncFiles () {
-  echo "Beginning kudu sync"
-  "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh;node_modules;packages;paket-files"
-  exitWithMessageOnError "Kudu Sync failed"
-}
-
 dotnetRestore () {
   cd "$DEPLOYMENT_TARGET"
   dotnet restore
@@ -140,10 +134,17 @@ dotnetPublish () {
   cd - > /dev/null
 }
 
-echo "Step 1: KuduSync"
-if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
-  time syncFiles
-fi
+syncFiles () {
+  echo "Beginning kudu sync"
+  "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh;node_modules;packages;paket-files"
+  exitWithMessageOnError "Kudu Sync failed"
+}
+
+echo "Step 1: Dotnet restore"
+time dotnetRestore
+
+echo "Step 2: Dotnet publish"
+time dotnetPublish
 
 # echo "Step 2: Yarn install"
 
@@ -165,11 +166,10 @@ fi
 #   cd - > /dev/null
 # fi
 
-echo "Step 2: Dotnet restore"
-time dotnetRestore
-
-echo "Step 3: Dotnet publish"
-time dotnetPublish
+echo "Step 3: KuduSync"
+if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
+  time syncFiles
+fi
 
 ##################################################################################################################################
 echo "Finished successfully."
