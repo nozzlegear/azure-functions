@@ -151,26 +151,18 @@ fi
 echo "Step 4: Dotnet restore"
 
 # 4. Restore dotnet packages
-if [ -e "$DEPLOYMENT_TARGET/"*.sln]; then
-  cd "$DEPLOYMENT_TARGET"
-  dotnet restore
-  exitWithMessageOnError "Failed to restore dotnet packages."
-  cd - > /dev/null
-else
-  echo "Could not find dotnet solution file in directory $DEPLOYMENT_TARGET."
-fi
+cd "$DEPLOYMENT_TARGET"
+dotnet restore
+exitWithMessageOnError "Failed to restore dotnet packages."
+cd - > /dev/null
 
 echo "Step 5: Dotnet public"
 
 # 4. Publish dotnet solution
-if [ -e "$DEPLOYMENT_TARGET/"*.sln]; then
-  cd "$DEPLOYMENT_TARGET"
-  dotnet publish -C Release
-  exitWithMessageOnError "Failed to publish dotnet solution."
-  cd - > /dev/null
-else
-  echo "Could not find dotnet solution file in directory $DEPLOYMENT_TARGET."
-fi
+cd "$DEPLOYMENT_TARGET"
+dotnet publish -C Release
+exitWithMessageOnError "Failed to publish dotnet solution."
+cd - > /dev/null
 
 ##################################################################################################################################
 echo "Finished successfully."
