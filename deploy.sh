@@ -16,30 +16,6 @@ exitWithMessageOnError () {
   fi
 }
 
-# Prerequisites
-# -------------
-
-# Verify node.js installed
-hash node 2>/dev/null
-exitWithMessageOnError "Missing node.js executable, please install node.js, if already installed make sure it can be reached from current environment."
-
-# Verify dotnet installed
-hash dotnet 2>/dev/null
-exitWithMessageOnError "Missing dotnet executable."
-
-# Bootstrap paket. Since we're using git-bash we can just call exe files
-.paket/paket.bootstrapper.exe
-exitWithMessageOnError "Failed to bootstrap paket."
-
-# Verify yarn installed
-hash yarn 2>/dev/null
-if [[ $? != 0 ]]; then
-  echo "Missing yarn, installing via npm"
-  npm install yarn -g --silent
-  exitWithMessageOnError "Failed to install Yarn."
-  echo "Finished installing Yarn."
-fi
-
 # Setup
 # -----
 
@@ -111,6 +87,33 @@ selectNodeVersion () {
   fi
 }
 
+# Prerequisites
+# -------------
+
+# Select node version
+selectNodeVersion
+
+# Verify node.js installed
+hash node 2>/dev/null
+exitWithMessageOnError "Missing node.js executable, please install node.js, if already installed make sure it can be reached from current environment."
+
+# Verify dotnet installed
+hash dotnet 2>/dev/null
+exitWithMessageOnError "Missing dotnet executable."
+
+# Bootstrap paket. Since we're using git-bash we can just call exe files
+.paket/paket.bootstrapper.exe
+exitWithMessageOnError "Failed to bootstrap paket."
+
+# Verify yarn installed
+hash yarn 2>/dev/null
+if [[ $? != 0 ]]; then
+  echo "Missing yarn, installing via npm"
+  npm install yarn -g --silent
+  exitWithMessageOnError "Failed to install Yarn."
+  echo "Finished installing Yarn."
+fi
+
 ##################################################################################################################################
 # Deployment
 # ----------
@@ -123,17 +126,17 @@ if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
   exitWithMessageOnError "Kudu Sync failed"
 fi
 
-# 2. Select node version
-selectNodeVersion
-
-# 3. Install npm packages
+# 2. Restore npm packages and build npm projects
 if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd "$DEPLOYMENT_TARGET"
-  eval $NPM_CMD install --production
-  exitWithMessageOnError "npm failed"
+  yarn install
+  exitWithMessageOnError "yarn package install failed"
+  yarn build
+  exitWithMessageOnError "yarn build failed"
   cd - > /dev/null
 fi
 
+# 3. Restore dotnet packages and publish solution
 if [ -e "$DEPLOYMENT_TARGET/*.sln"]; then
   cd "$DEPLOYMENT_TARGET"
   dotnet restore
