@@ -128,27 +128,27 @@ if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
   exitWithMessageOnError "Kudu Sync failed"
 fi
 
-echo "Step 2: Yarn install"
+# echo "Step 2: Yarn install"
 
-# 2. Restore npm packages
-if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
-  cd "$DEPLOYMENT_TARGET"
-  yarn install
-  exitWithMessageOnError "yarn package install failed"
-  cd - > /dev/null
-fi
+# # 2. Restore npm packages
+# if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
+#   cd "$DEPLOYMENT_TARGET"
+#   yarn install
+#   exitWithMessageOnError "yarn package install failed"
+#   cd - > /dev/null
+# fi
 
-echo "Step 3: Yarn build"
+# echo "Step 3: Yarn build"
 
-# 3. Build npm projects
-if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
-  cd "$DEPLOYMENT_TARGET"
-  yarn build
-  exitWithMessageOnError "yarn build failed"
-  cd - > /dev/null
-fi
+# # 3. Build npm projects
+# if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
+#   cd "$DEPLOYMENT_TARGET"
+#   yarn build
+#   exitWithMessageOnError "yarn build failed"
+#   cd - > /dev/null
+# fi
 
-echo "Step 4: Dotnet restore"
+echo "Step 2: Dotnet restore"
 
 # 4. Restore dotnet packages
 cd "$DEPLOYMENT_TARGET"
@@ -156,7 +156,7 @@ dotnet restore
 exitWithMessageOnError "Failed to restore dotnet packages."
 cd - > /dev/null
 
-echo "Step 5: Dotnet public"
+echo "Step 3: Dotnet public"
 
 # 4. Publish dotnet solution
 cd "$DEPLOYMENT_TARGET"
