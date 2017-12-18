@@ -119,13 +119,30 @@ fi
 # ----------
 
 echo "Handling deployment from directory $PWD."
-echo "Step 1: KuduSync"
 
-# 1. KuduSync
-if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
+syncFiles () {
   echo "Beginning kudu sync"
   "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh;node_modules;packages;paket-files"
   exitWithMessageOnError "Kudu Sync failed"
+}
+
+dotnetRestore () {
+  cd "$DEPLOYMENT_TARGET"
+  dotnet restore
+  exitWithMessageOnError "Failed to restore dotnet packages."
+  cd - > /dev/null
+}
+
+dotnetPublish () {
+  cd "$DEPLOYMENT_TARGET"
+  dotnet publish -c Release -o publish
+  exitWithMessageOnError "Failed to publish dotnet solution."
+  cd - > /dev/null
+}
+
+echo "Step 1: KuduSync"
+if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
+  time syncFiles
 fi
 
 # echo "Step 2: Yarn install"
@@ -149,20 +166,10 @@ fi
 # fi
 
 echo "Step 2: Dotnet restore"
+time dotnetRestore
 
-# 4. Restore dotnet packages
-cd "$DEPLOYMENT_TARGET"
-dotnet restore
-exitWithMessageOnError "Failed to restore dotnet packages."
-cd - > /dev/null
-
-echo "Step 3: Dotnet public"
-
-# 4. Publish dotnet solution
-cd "$DEPLOYMENT_TARGET"
-dotnet publish -c Release -o publish
-exitWithMessageOnError "Failed to publish dotnet solution."
-cd - > /dev/null
+echo "Step 3: Dotnet publish"
+time dotnetPublish
 
 ##################################################################################################################################
 echo "Finished successfully."
