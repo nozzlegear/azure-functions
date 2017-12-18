@@ -16,7 +16,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 :: Verify yarn installed
-which yarn 2>nul >nul
+where yarn 2>nul >nul
 IF %ERRORLEVEL% NEQ 0 (
   echo "Missing yarn, installing via npm"
   call npm install yarn -g --silent
