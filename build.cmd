@@ -1,4 +1,4 @@
-@if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
+:: @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
 :: ----------------------
 :: KUDU Deployment Script
@@ -9,7 +9,7 @@
 :: -------------
 
 :: Verify node.js installed
-where node 2>nul >nul
+node --version 2>nul >nul
 IF %ERRORLEVEL% NEQ 0 (
   echo Missing node.js executable, please install node.js, if already installed make sure it can be reached from current environment.
   goto error
@@ -77,6 +77,8 @@ IF !ERRORLEVEL! NEQ 0 goto error
 call yarn install
 call yarn build
 IF !ERRORLEVEL! NEQ 0 goto error
+
+echo "In place deployment??" %IN_PLACE_DEPLOYMENT%
 
 :: 3. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
