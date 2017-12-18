@@ -29,7 +29,11 @@ exitWithMessageOnError "Missing dotnet executable."
 
 # Verify mono
 hash mono 2>/dev/null
-exitWithMessageOnError "Missing mono executable, impossible to bootstrap or run paket.exe."
+if [[ $? != 0]]; then
+  # Install mono
+  apt install mono-complete -y
+  exitWithMessageOnError "Failed to install mono executable, impossible to bootstrap or run paket.exe."
+fi
 
 # Bootstrap paket
 mono .paket/paket.bootstrapper.exe
