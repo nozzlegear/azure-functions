@@ -1,4 +1,4 @@
-namespace RedditRollup.Domain
+module Domain
 
 open Newtonsoft.Json
 

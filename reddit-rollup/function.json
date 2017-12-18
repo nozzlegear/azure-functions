@@ -8,6 +8,6 @@
             "schedule": "0 0 12 * * *"
         }
     ],
-    "scriptFile": "./bin/Release/netcoreapp2.0/reddit-rollup.dll",
-    "entryPoint": "RedditRollup.Program.main"
+    "scriptFile": ".\\bin\\Release\\netstandard2.0\\publish\\reddit-rollup.dll",
+    "entryPoint": "RedditRollup.Send"
 }

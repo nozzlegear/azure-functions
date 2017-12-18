@@ -1,12 +1,12 @@
 ﻿// Learn more about F# at http://fsharp.org
-namespace RedditRollup
-module Program =
+module RedditRollup
 
     open System
     open Microsoft.Azure.WebJobs
+    open Microsoft.Azure.WebJobs.Host
     open Newtonsoft.Json
-    open RedditRollup.Domain
-    open Flurl.Http
+    open Domain
+    open System.Net
 
     let envVarRequired name =
         let value = System.Environment.GetEnvironmentVariable name
@@ -19,9 +19,7 @@ module Program =
     let swuTemplateId = envVarRequired "REDDIT_ROLLUP_SWU_TEMPLATE_ID"
     let subs = [
         "politicaldiscussion"
-        "wholesomememes"
         "birbs"
-        "prequelmemes"
         "shaboozey"
         "thecompletionist"
         "warcraftlore"
@@ -31,6 +29,7 @@ module Program =
         "dotnet"
         "typescript"
         "javascript"
+        "coolgithubprojects"
         "asmr"
         "anxiety"
     ]
@@ -39,9 +38,10 @@ module Program =
         resolution.height < 700 && resolution.height > 300
 
     let getTopPosts (count: int) (subreddit: string) =
-        let client = Flurl.Url.Combine("https://www.reddit.com", sprintf "r/{%s}/top.json?sort=top&t=day" subreddit).AllowAnyHttpStatus()
-        let request = client.GetAsync()
-        let result =
+        let url = sprintf "https://www.reddit.com/r/{%s}/top.json?sort=top&t=day" subreddit
+        use client = new Http.HttpClient ()
+        use request = client.GetAsync url
+        use result =
             request
             |> Async.AwaitTask
             |> Async.RunSynchronously
@@ -49,9 +49,10 @@ module Program =
         result.EnsureSuccessStatusCode() |> ignore
 
         let body =
-            request.ReceiveJson<SubredditListResponse>()
+            result.Content.ReadAsStringAsync()
             |> Async.AwaitTask
             |> Async.RunSynchronously
+            |> JsonConvert.DeserializeObject<SubredditListResponse>
 
         body.data.children
         |> Seq.take count
@@ -98,32 +99,39 @@ module Program =
     let sendEmail (html: string): SendWithUsResponse =
         let subject = sprintf "Daily Reddit Rollup for %s." <| DateTime.UtcNow.ToString("MMM dd, yyyy");
         let openingHtml = sprintf "<h1>%s</h1><p>Showing the top 3 posts for the last 24 hours.</p><hr/>" subject;
-        let request =
-            "https://api.sendwithus.com/api/v1/send".AllowAnyHttpStatus().WithHeader("X-SWU-API-KEY", swuApiKey).PostJsonAsync
-            <|
-                {
-                    Files = []
-                    CC = []
-                    BCC = []
-                    EmailId = swuTemplateId
-                    Recipient =
-                        {
-                            Name = "Joshua Harms"
-                            Address = "nozzlegear@outlook.com"
-                            ReplyTo = "nozzlegear@outlook.com"
-                        }
-                    Sender =
-                        {
-                            Name = "Reddit Rollup"
-                            Address = "reddit-rollup@nozzlegear.com"
-                            ReplyTo = "reddit-rollup@nozzlegear.com"
-                        }
-                    EmailData =
+        use body =
+            {
+                Files = []
+                CC = []
+                BCC = []
+                EmailId = swuTemplateId
+                Recipient =
                     {
-                        rollup_html = html
-                        subject = subject
+                        Name = "Joshua Harms"
+                        Address = "nozzlegear@outlook.com"
+                        ReplyTo = "nozzlegear@outlook.com"
                     }
+                Sender =
+                    {
+                        Name = "Reddit Rollup"
+                        Address = "reddit-rollup@nozzlegear.com"
+                        ReplyTo = "reddit-rollup@nozzlegear.com"
+                    }
+                EmailData =
+                {
+                    rollup_html = html
+                    subject = subject
                 }
+            }
+            |> JsonConvert.SerializeObject
+            |> fun s -> new Http.StringContent(s, Text.Encoding.UTF8, "application/json")
+        use client = new Http.HttpClient()
+        use requestMessage = new Http.HttpRequestMessage(Http.HttpMethod.Post, "https://api.sendwithus.com/api/v1/send")
+
+        requestMessage.Headers.Add("X-SWU-API-KEY", swuApiKey)
+        requestMessage.Content <- body
+
+        use request = client.SendAsync requestMessage
         let result =
             request
             |> Async.AwaitTask
@@ -131,19 +139,18 @@ module Program =
 
         result.EnsureSuccessStatusCode() |> ignore
 
-        request.ReceiveJson<SendWithUsResponse>()
+        result.Content.ReadAsStringAsync()
         |> Async.AwaitTask
         |> Async.RunSynchronously
+        |> JsonConvert.DeserializeObject<SendWithUsResponse>
 
-    [<EntryPoint>]
-    [<FunctionName("RedditRollup")>]
-    let main argv =
-        let sendResult =
-            subs
-            |> Seq.map(getTopPosts 3)
-            |> Seq.collect(id)
-            |> Seq.map(convertPostToHtml)
-            |> fun htmls -> String.Join("", htmls)
-            |> sendEmail
+    let Send(myTimer: TimerInfo, log: TraceWriter) =
+        subs
+        |> Seq.map(getTopPosts 3)
+        |> Seq.collect(id)
+        |> Seq.map(convertPostToHtml)
+        |> String.concat ""
+        |> sendEmail
+        |> ignore
 
         0 // return an integer exit code
