@@ -160,7 +160,7 @@ echo "Step 5: Dotnet public"
 
 # 4. Publish dotnet solution
 cd "$DEPLOYMENT_TARGET"
-dotnet publish -C Release
+dotnet publish -c Release
 exitWithMessageOnError "Failed to publish dotnet solution."
 cd - > /dev/null
 
