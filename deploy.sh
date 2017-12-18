@@ -27,16 +27,8 @@ exitWithMessageOnError "Missing node.js executable, please install node.js, if a
 hash dotnet 2>/dev/null
 exitWithMessageOnError "Missing dotnet executable."
 
-# Verify mono
-hash mono 2>/dev/null
-if [[ $? != 0]]; then
-  # Install mono
-  apt install mono-complete -y
-  exitWithMessageOnError "Failed to install mono executable, impossible to bootstrap or run paket.exe."
-fi
-
-# Bootstrap paket
-mono .paket/paket.bootstrapper.exe
+# Bootstrap paket. Since we're using git-bash we can just call exe files
+.paket/paket.bootstrapper.exe
 exitWithMessageOnError "Failed to bootstrap paket."
 
 # Verify yarn installed
