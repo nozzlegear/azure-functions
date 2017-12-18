@@ -151,7 +151,7 @@ fi
 echo "Step 4: Dotnet restore"
 
 # 4. Restore dotnet packages
-if [ -e "$DEPLOYMENT_TARGET/*.sln"]; then
+if [ -e "$DEPLOYMENT_TARGET/"*.sln]; then
   cd "$DEPLOYMENT_TARGET"
   dotnet restore
   exitWithMessageOnError "Failed to restore dotnet packages."
@@ -163,7 +163,7 @@ fi
 echo "Step 5: Dotnet public"
 
 # 4. Publish dotnet solution
-if [ -e "$DEPLOYMENT_TARGET/*.sln"]; then
+if [ -e "$DEPLOYMENT_TARGET/"*.sln]; then
   cd "$DEPLOYMENT_TARGET"
   dotnet publish -C Release
   exitWithMessageOnError "Failed to publish dotnet solution."
