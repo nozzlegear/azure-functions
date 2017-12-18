@@ -109,7 +109,7 @@ exitWithMessageOnError "Failed to bootstrap paket."
 hash yarn 2>/dev/null
 if [[ $? != 0 ]]; then
   echo "Missing yarn, installing via npm"
-  npm install yarn -g --silent
+  eval $NPM_CMD install yarn -g --silent
   exitWithMessageOnError "Failed to install Yarn."
   echo "Finished installing Yarn."
 fi
