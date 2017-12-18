@@ -19,8 +19,8 @@ IF %ERRORLEVEL% NEQ 0 (
 where yarn 2>nul >nul
 IF %ERRORLEVEL% NEQ 0 (
   echo "Missing yarn, installing via npm"
-  call npm install yarn -g --silent
-  echo "Checking yarn install error level"
+  call npm install yarn -g
+  echo "Checking yarn install error level :" !ERRORLEVEL!
   IF !ERRORLEVEL! NEQ 0 goto error
   echo "Finished installing Yarn."
 )
