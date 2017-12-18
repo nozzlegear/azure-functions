@@ -9,5 +9,5 @@
         }
     ],
     "scriptFile": ".\\publish\\bin\\reddit-rollup.dll",
-    "entryPoint": "RedditRollup.Send"
+    "entryPoint": "RedditRollup.AzureFunction.Run"
 }
