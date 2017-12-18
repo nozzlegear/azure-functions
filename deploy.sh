@@ -119,6 +119,7 @@ fi
 # ----------
 
 echo "Handling deployment from directory $PWD."
+echo "Step 1: KuduSync"
 
 # 1. KuduSync
 if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
@@ -126,21 +127,43 @@ if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
   exitWithMessageOnError "Kudu Sync failed"
 fi
 
-# 2. Restore npm packages and build npm projects
+echo "Step 2: Yarn install"
+
+# 2. Restore npm packages
 if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd "$DEPLOYMENT_TARGET"
   yarn install
   exitWithMessageOnError "yarn package install failed"
+  cd - > /dev/null
+fi
+
+echo "Step 3: Yarn build"
+
+# 3. Build npm projects
+if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
+  cd "$DEPLOYMENT_TARGET"
   yarn build
   exitWithMessageOnError "yarn build failed"
   cd - > /dev/null
 fi
 
-# 3. Restore dotnet packages and publish solution
+echo "Step 4: Dotnet restore"
+
+# 4. Restore dotnet packages
 if [ -e "$DEPLOYMENT_TARGET/*.sln"]; then
   cd "$DEPLOYMENT_TARGET"
   dotnet restore
   exitWithMessageOnError "Failed to restore dotnet packages."
+  cd - > /dev/null
+else
+  echo "Could not find dotnet solution file in directory $DEPLOYMENT_TARGET."
+fi
+
+echo "Step 5: Dotnet public"
+
+# 4. Publish dotnet solution
+if [ -e "$DEPLOYMENT_TARGET/*.sln"]; then
+  cd "$DEPLOYMENT_TARGET"
   dotnet publish -C Release
   exitWithMessageOnError "Failed to publish dotnet solution."
   cd - > /dev/null
