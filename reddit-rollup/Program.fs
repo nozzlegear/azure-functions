@@ -1,6 +1,6 @@
 ﻿// Learn more about F# at http://fsharp.org
 namespace RedditRollup
-module AzureFunction =
+module public AzureFunction =
 
     open System
     open Microsoft.Azure.WebJobs
