@@ -1,12 +1,11 @@
 import * as Bluebird from 'bluebird';
-import * as Constants from '../modules/constants';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Twitter from 'twitter';
 import * as util from 'util';
-import { Context } from 'azure-functions';
 import { getTweets } from './tweets';
 import { sendRollup } from './email';
+import getStdin = require("get-stdin");
 
 function envRequired(key: string) {
     const value = process.env[key];
@@ -18,13 +17,7 @@ function envRequired(key: string) {
     return value;
 }
 
-export = async (context: Context, timer) => {
-    if (timer.isPastDue) {
-        context.log('Twitter Rollup is running late!');
-    } else {
-        context.log('Twitter Rollup is running.');
-    }
-
+async function run(bodyContent: string) {
     const fileLocation = path.join(__dirname, "tweet-history.json");
     const client = new Twitter({
         consumer_key: envRequired("TWITTER_CONSUMER_KEY"),
@@ -49,7 +42,7 @@ export = async (context: Context, timer) => {
         let tweets: Twitter.Tweet[] = []
 
         try {
-            tweets = await getTweets(context, client, username, userHistory && userHistory.lastTweetId);
+            tweets = await getTweets(client, username, userHistory && userHistory.lastTweetId);
         } catch (e) {
             console.error(`Error getting tweets for username ${username}.`, e)
         }
@@ -72,14 +65,29 @@ export = async (context: Context, timer) => {
             sendWithUsTemplateId: swuTemplateId
         });
 
-        context.log(`Sent email!`)
-    } catch (e) {
-        context.log("Error sending Twitter Rollup email:", e);
-    }
+        console.log(`Sent email!`)
+    } catch (_e) {
+        const e: Error = _e;
+        e.message = "Error sending Twitter Rollup email: " + e.message;
 
+        throw e;
+    }
 
     // Write updated history back to the history file.
     fs.writeFileSync(fileLocation, JSON.stringify(history));
+}
 
-    context.log("Twitter Rollup finished. See you tomorrow!")
+export = (content: string, callback: (error: Error | undefined, any) => void) => {
+    // try {
+    //     await run(content);
+    //     callback(undefined, "Twitter Rollup finished. See you tomorrow!");
+    // } catch (e) {
+    //     callback(e, undefined)
+    // }
+
+    callback(undefined, "Hello from twitter-rollup")
 };
+
+getStdin()
+    .then(run)
+    .catch(console.error);

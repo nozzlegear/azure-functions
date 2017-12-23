@@ -1,7 +1,6 @@
 import * as Bluebird from 'bluebird';
 import * as Twitter from 'twitter';
 import BaseClient from 'gearworks-http';
-import { Context } from 'azure-functions';
 import { createTransport } from 'nodemailer';
 
 export type UserTweets = { [username: string]: Twitter.Tweet[] }

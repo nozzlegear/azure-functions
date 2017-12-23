@@ -1,13 +1,12 @@
 import * as Bluebird from 'bluebird';
 import * as Twitter from 'twitter';
-import { Context } from 'azure-functions';
 
-export function getTweets(context: Context, client: Twitter, username: string, sinceId: number = 1) {
+export function getTweets(client: Twitter, username: string, sinceId: number = 1) {
     return new Bluebird<Twitter.Tweet[]>((res, rej) => {
         // TODO: Allow replies, but only to the list of users that we're following.
         client.get("statuses/user_timeline", { screen_name: username, since_id: sinceId, exclude_replies: true, tweet_mode: "extended" }, (err, tweets, resp) => {
             if (err) {
-                context.log(`Error getting tweets for ${username}.`, { error: err, resp: resp });
+                console.error(`Error getting tweets for ${username}.`, { error: err, resp: resp });
             }
 
             const filteredTweets =

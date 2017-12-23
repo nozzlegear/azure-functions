@@ -1,0 +1,9 @@
+provider:
+  name: faas
+  gateway: http://localhost:8080
+
+functions:
+  twitter-rollup2:
+    lang: node
+    handler: ./twitter-rollup2
+    image: twitter-rollup2
