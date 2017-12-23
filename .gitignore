@@ -66,3 +66,9 @@ paket-files/
 .paket/paket.exe
 .paket/paket.exe.config
 .paket/paket.targets
+template
+build
+
+# Ignore openfaas build and template folders
+build
+template
