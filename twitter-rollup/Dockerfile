@@ -16,8 +16,9 @@ RUN yarn build
 # Define your UNIX binary here
 ENV fprocess="node /app/dist/index.js"
 ENV marshal_request=true
-ENV read_timeout=30
-ENV write_timeout=30
+ENV read_timeout=60
+ENV write_timeout=60
+ENV content_type=application/json
 
 HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
 
