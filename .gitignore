@@ -72,3 +72,7 @@ build
 # Ignore openfaas build and template folders
 build
 template
+
+# Ignore unencrypted env files
+env.yml
+*/env.yml
