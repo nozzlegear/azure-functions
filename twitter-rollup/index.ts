@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Twitter from 'twitter';
 import * as util from 'util';
+import { existsSync, readSync } from 'fs';
 import { getTweets } from './tweets';
 import { sendRollup } from './email';
 import getStdin = require("get-stdin");
@@ -37,6 +38,8 @@ async function run(bodyContent: string) {
         history = {};
     }
 
+    let totalTweets = 0;
+
     const tweets = await Bluebird.reduce<string, { [username: string]: Twitter.Tweet[] }>(follows, async (result, username) => {
         const userHistory = history[username];
         let tweets: Twitter.Tweet[] = []
@@ -47,7 +50,13 @@ async function run(bodyContent: string) {
             console.error(`Error getting tweets for username ${username}.`, e)
         }
 
+        if (tweets.length > 15) {
+            // Emails have a hard limit of 128kb, so trim some tweets to ensure we don't hit it.
+            tweets = tweets.slice(0, 15);
+        }
+
         if (tweets.length > 0) {
+            totalTweets += tweets.length
             // TODO: Filter out unwanted keywords like "I'm drinking an X" or "I just earned the Y badge"
             result[username] = tweets;
             // The last tweet id should be the greatest one.
@@ -64,8 +73,6 @@ async function run(bodyContent: string) {
             sendWithUsKey: swuKey,
             sendWithUsTemplateId: swuTemplateId
         });
-
-        console.log(`Sent email!`)
     } catch (_e) {
         const e: Error = _e;
         e.message = "Error sending Twitter Rollup email: " + e.message;
@@ -73,21 +80,13 @@ async function run(bodyContent: string) {
         throw e;
     }
 
+    console.log(JSON.stringify({ status: 200, message: "Sent email." }));
+
     // Write updated history back to the history file.
     fs.writeFileSync(fileLocation, JSON.stringify(history));
 }
 
-export = (content: string, callback: (error: Error | undefined, any) => void) => {
-    // try {
-    //     await run(content);
-    //     callback(undefined, "Twitter Rollup finished. See you tomorrow!");
-    // } catch (e) {
-    //     callback(e, undefined)
-    // }
-
-    callback(undefined, "Hello from twitter-rollup")
-};
-
+// When running an OpenFaaS function, request body is passed to stdin and request headers/querystring are available as environment variables.
 getStdin()
     .then(run)
     .catch(console.error);

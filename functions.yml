@@ -7,3 +7,5 @@ functions:
     lang: Dockerfile
     handler: ./twitter-rollup
     image: nozzlegear/twitter-rollup
+    environment_file:
+      - ./twitter-rollup/env.yml
