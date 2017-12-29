@@ -5,3 +5,4 @@ dependencies:
   logging: any
   json_god: ^2.0.0-beta
   intl: "^0.15.2"
+  http: "^0.11.3+16"

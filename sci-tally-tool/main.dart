@@ -1,11 +1,12 @@
 @MirrorsUsed()
 import "dart:async";
-import "dart:io";
+import "dart:io" show Platform;
 import "dart:mirrors";
-import "dart:convert" show UTF8, JSON, BASE64;
+import "dart:convert" show UTF8, BASE64, Encoding;
 import "package:logging/logging.dart";
 import "package:intl/intl.dart" show DateFormat;
 import 'package:json_god/json_god.dart' as god;
+import 'package:http/http.dart' as http;
 
 final Logger log = new Logger("main");
 
@@ -38,58 +39,83 @@ String buildApiUrl(DateTime startDate, DateTime endDate) {
   return "$protocol://$apiDomain/api/v1/orders/tally/sources?since=${startDate.millisecondsSinceEpoch}&until=${endDate.millisecondsSinceEpoch}";
 }
 
-Future<HttpClientResponse> makeRequest<T>(Uri url, String method,
-    {T body = null, Map<String, String> headers = null}) async {
-  HttpClientRequest req = await new HttpClient().openUrl(method, url)
-    ..headers.contentType = ContentType.JSON
-    ..headers.add("Accept", ContentType.JSON);
+Future<http.Response> makeRequest<T>(Uri url, String method,
+    {T body = null, Map<String, String> customHeaders = null}) async {
+  var headers = new Map.from(customHeaders ?? new Map())
+    ..putIfAbsent("Content-Type", () => "application/json")
+    ..putIfAbsent("Accept", () => "application/json");
+  http.Response resp;
 
-  if (headers != null) {
-    headers.forEach((key, value) => req.headers.set(key, value));
+  switch (method.toLowerCase()) {
+    case "post":
+      resp = await http.post(url,
+          body: god.serialize(body),
+          encoding: Encoding.getByName("UTF8"),
+          headers: headers);
+      break;
+    case "get":
+      resp = await http.get(url, headers: headers);
+      break;
+    default:
+      throw new UnimplementedError(
+          "Attempted to create HttpClient with unsupported HTTP method $method.");
   }
 
-  if (body != null) {
-    req.write(god.serialize(body));
-  }
+  return resp;
 
-  return await req.close();
+  // req
+  //   ..headers.contentType = ContentType.JSON
+  //   ..headers.add("Accept", ContentType.JSON);
+
+  // if (headers != null) {
+  //   headers.forEach((key, value) => req.headers.set(key, value));
+  // }
+
+  // if (body != null) {
+  //   String json = god.serialize(body);
+  //   log.info(json);
+  //   req.write(json);
+  //   await req.flush();
+  // }
+
+  // return await req.close();
 }
 
-void ensureSuccessResponse(HttpClientResponse resp) {
+void ensureSuccessResponse(http.Response resp) {
   if (resp.statusCode < 200 || resp.statusCode >= 300) {
-    throw new StateError(
-        "Request to ${resp.connectionInfo.remoteAddress} failed with ${resp.statusCode} ${resp.reasonPhrase}");
+    String message =
+        "Request to ${resp.request.url} failed with ${resp.statusCode} ${resp.reasonPhrase}.";
+
+    log.severe("$message Response body: ${resp.body}");
+
+    throw new StateError(message);
   }
 }
 
 Future<T> makeGetRequest<T>(String url,
     [Map<String, String> headers = null]) async {
-  HttpClientResponse resp =
-      await makeRequest<Object>(Uri.parse(url), "GET", headers: headers);
-  String responseBody = await UTF8.decodeStream(resp);
+  var resp =
+      await makeRequest<Object>(Uri.parse(url), "GET", customHeaders: headers);
 
   ensureSuccessResponse(resp);
 
-  return JSON.decode(responseBody) as T;
+  return god.deserialize(resp.body) as T;
 }
 
 Future<T> makePostRequest<D, T>(String url, D body,
     [Map<String, String> headers = null]) async {
-  HttpClientResponse resp =
-      await makeRequest(Uri.parse(url), "POST", body: body, headers: headers);
-  String responseBody = await UTF8.decodeStream(resp);
+  http.Response resp = await makeRequest(Uri.parse(url), "POST",
+      body: body, customHeaders: headers);
 
   ensureSuccessResponse(resp);
 
-  return JSON.decode(responseBody) as T;
+  return god.deserialize(resp.body) as T;
 }
 
-Future<Map<String, Object>> sendMessage(
-    DateTime startDate, DateTime endDate, List<TallyTemplate> tally) async {
+SwuMessage buildEmailData(DateTime startDate, List<TallyTemplate> tally) {
   final emailDomain = envVarRequired("SCI_TALLY_EMAIL_DOMAIN");
   final bool isLive =
       envVarDefault("SCI_TALLY_ENV", "development") == "production";
-  final swuKey = envVarRequired("SCI_TALLY_SWU_KEY");
   final swuTemplateId = envVarRequired("SCI_TALLY_SWU_TEMPLATE_ID");
   final formatEmail = (String name) => "$name@$emailDomain";
   final SwuRecipient emailRecipient = isLive
@@ -100,10 +126,8 @@ Future<Map<String, Object>> sendMessage(
       : [];
   final sender = new SwuSender("KMSignalR Superintendent",
       formatEmail("superintendent"), formatEmail("superintendent"));
-  final headers = {
-    "Authorization": BASE64.encode(UTF8.encode("$swuKey:")),
-  };
-  final message = new SwuMessage()
+
+  return new SwuMessage()
     ..template = swuTemplateId
     ..recipient = emailRecipient
     ..cc = ccs
@@ -111,10 +135,6 @@ Future<Map<String, Object>> sendMessage(
     ..template_data = (new SwuTallyTemplateData()
       ..date = new DateFormat("MMM dd, yyyy").format(startDate)
       ..tally = tally);
-
-  log.info(god.serialize(message));
-
-  return new Map<String, Object>();
 }
 
 Future main(List<String> args) async {
@@ -131,15 +151,17 @@ Future main(List<String> args) async {
 
   log.info("Getting tally from ${url}.");
 
-  Map<String, int> tally = await makeGetRequest(url);
-  Map<String, Object> emailResult = await sendMessage(startDate, endDate,
-      tally.keys.map((key) => new TallyTemplate(key, tally[key])));
-  tally.forEach((name, count) => log.info("$name: $count"));
+  Iterable<TallyTemplate> tally = await makeGetRequest<Map<String, int>>(url)
+      .then((map) => map.keys.map((key) => new TallyTemplate(key, map[key])));
+  SwuMessage emailMessage = buildEmailData(startDate, tally);
+  final swuKey = envVarRequired("SCI_TALLY_SWU_KEY");
+  final headers = {
+    "Authorization": "Basic ${BASE64.encode(UTF8.encode("$swuKey:"))}",
+  };
+  Map<String, Object> emailResult = await makePostRequest(
+      "https://api.sendwithus.com/api/v1/send", emailMessage, headers);
 
-  log.info(emailResult);
-
-  // For some reason the vm will take 10+ seconds to exit when async is involved. Force it to exit quickly.
-  exit(0);
+  log.info("Email send result: $emailResult");
 }
 
 class TallyTemplate {
