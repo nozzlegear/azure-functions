@@ -76,3 +76,7 @@ template
 # Ignore unencrypted env files
 env.yml
 */env.yml
+
+# Dart pub files
+.packages
+.pub/

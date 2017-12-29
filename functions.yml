@@ -9,3 +9,10 @@ functions:
     image: nozzlegear/twitter-rollup
     environment_file:
       - ./twitter-rollup/env.yml
+
+  sci_tally_tool:
+      lang: Dockerfile
+      handler: ./sci-tally-tool
+      image: nozzlegear/sci-tally-tool
+      environment_file:
+          - ./sci-tally-tool/env.yml

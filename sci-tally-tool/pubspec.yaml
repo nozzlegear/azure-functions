@@ -1,0 +1,7 @@
+name: sci_tally_tool
+version: 1.0.0
+publish_to: none
+dependencies:
+  logging: any
+  json_god: ^2.0.0-beta
+  intl: "^0.15.2"
