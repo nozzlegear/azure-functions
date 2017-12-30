@@ -3,6 +3,6 @@ version: 1.0.0
 publish_to: none
 dependencies:
   logging: any
-  json_god: ^2.0.0-beta
+  jsonx: "^2.0.2"
   intl: "^0.15.2"
   http: "^0.11.3+16"

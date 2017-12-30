@@ -37,12 +37,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.15.2"
-  json_god:
+  jsonx:
     description:
-      name: json_god
+      name: jsonx
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0-beta+1"
+    version: "2.0.2"
   logging:
     description:
       name: logging

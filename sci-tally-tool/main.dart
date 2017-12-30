@@ -1,11 +1,11 @@
-@MirrorsUsed()
+// @MirrorsUsed()
 import "dart:async";
 import "dart:io" show Platform;
 import "dart:mirrors";
 import "dart:convert" show UTF8, BASE64, Encoding;
 import "package:logging/logging.dart";
 import "package:intl/intl.dart" show DateFormat;
-import 'package:json_god/json_god.dart' as god;
+import 'package:jsonx/jsonx.dart' as json;
 import 'package:http/http.dart' as http;
 
 final Logger log = new Logger("main");
@@ -41,15 +41,16 @@ String buildApiUrl(DateTime startDate, DateTime endDate) {
 
 Future<http.Response> makeRequest<T>(Uri url, String method,
     {T body = null, Map<String, String> customHeaders = null}) async {
-  var headers = new Map.from(customHeaders ?? new Map())
-    ..putIfAbsent("Content-Type", () => "application/json")
-    ..putIfAbsent("Accept", () => "application/json");
+  Map<String, String> headers =
+      new Map.from(customHeaders ?? new Map<String, String>())
+        ..putIfAbsent("Content-Type", () => "application/json")
+        ..putIfAbsent("Accept", () => "application/json");
   http.Response resp;
 
   switch (method.toLowerCase()) {
     case "post":
       resp = await http.post(url,
-          body: god.serialize(body),
+          body: json.encode(body),
           encoding: Encoding.getByName("UTF8"),
           headers: headers);
       break;
@@ -99,7 +100,7 @@ Future<T> makeGetRequest<T>(String url,
 
   ensureSuccessResponse(resp);
 
-  return god.deserialize(resp.body) as T;
+  return json.decode(resp.body, type: T);
 }
 
 Future<T> makePostRequest<D, T>(String url, D body,
@@ -109,7 +110,7 @@ Future<T> makePostRequest<D, T>(String url, D body,
 
   ensureSuccessResponse(resp);
 
-  return god.deserialize(resp.body) as T;
+  return json.decode(resp.body, type: T);
 }
 
 SwuMessage buildEmailData(DateTime startDate, List<TallyTemplate> tally) {
@@ -122,7 +123,8 @@ SwuMessage buildEmailData(DateTime startDate, List<TallyTemplate> tally) {
       ? new SwuRecipient("Mike", formatEmail("mikef"))
       : new SwuRecipient("Joshua Harms", formatEmail("josh"));
   final List<SwuRecipient> ccs = isLive
-      ? JSON.decode(envVarRequired("SCI_TALLY_CC_LIST")) as List<SwuRecipient>
+      ? json.decode(envVarRequired("SCI_TALLY_CC_LIST"),
+          type: const json.TypeHelper<List<SwuRecipient>>().type)
       : [];
   final sender = new SwuSender("KMSignalR Superintendent",
       formatEmail("superintendent"), formatEmail("superintendent"));
