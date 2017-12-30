@@ -1,8 +1,0 @@
-name: sci_tally_tool
-version: 1.0.0
-publish_to: none
-dependencies:
-  logging: any
-  jsonx: "^2.0.2"
-  intl: "^0.15.2"
-  http: "^0.11.3+16"
