@@ -1,23 +1,28 @@
-FROM kkarczmarczyk/node-yarn:8.0
+FROM google/dart
 WORKDIR /app
 
 # copy project and restore as distinct layers
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install
+COPY pubspec.* ./
+RUN pub get
 
 # copy everything else and build
 COPY . ./
-RUN yarn build
+RUN pub get --offline
+RUN dart tool/build.dart
+RUN /app/analyze.sh
 
-# Define your UNIX binary here
-ENV fprocess="node /app/index.js"
-ENV read_timeout=60
-ENV write_timeout=60
-
-HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
-
+# Add openfaas watchdog
 ADD https://github.com/openfaas/faas/releases/download/0.6.15/fwatchdog /usr/bin
 RUN chmod +x /usr/bin/fwatchdog
+
+RUN /usr/bin/dart --version
+
+# Define your UNIX binary here
+ENV fprocess="/usr/bin/dart /app/lib/main.dart"
+ENV read_timeout=60
+ENV write_timeout=60
+# ENV content_type=application/json
+
+HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
 
 CMD ["fwatchdog"]
