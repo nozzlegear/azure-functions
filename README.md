@@ -18,8 +18,8 @@ Usage:
 
 ## TODO
 
-- [] Build a function to listen for GitHub webhooks and build/deploy all functions on new pushes.
-- [] Build a function to aggregate the logs for all other functions.
-- [] Figure out how to deploy environment variables without the need for uploading my own gpg key to production.
+- [ ] Build a function to listen for GitHub webhooks and build/deploy all functions on new pushes.
+- [ ] Build a function to aggregate the logs for all other functions.
+- [ ] Figure out how to deploy environment variables without the need for uploading my own gpg key to production.
   - Maybe a function that responds with environment variables and other functions can query them? With a public, password-protected portal to view/change them?
   - Or maybe they read them from a password-protected CouchDB instance?
