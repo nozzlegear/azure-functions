@@ -74,6 +74,7 @@ build
 template
 
 # Ignore unencrypted env files
+.gitsecret/random_seed
 env.yml
 */env.yml
 
