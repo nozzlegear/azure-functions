@@ -18,7 +18,9 @@ Usage:
 
 ## TODO
 
+- [ ] Change the name of this repo to just "functions".
 - [ ] Build a function to listen for GitHub webhooks and build/deploy all functions on new pushes.
+  - On second thought this might be more difficult than imagined in that the listener function is in its own container and can't get outside of that to deploy the repo.
 - [ ] Build a function to aggregate the logs for all other functions.
 - [ ] Figure out how to deploy environment variables without the need for uploading my own gpg key to production.
   - Maybe a function that responds with environment variables and other functions can query them? With a public, password-protected portal to view/change them?
