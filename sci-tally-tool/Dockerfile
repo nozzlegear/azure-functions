@@ -9,6 +9,7 @@ RUN pub get
 COPY . ./
 RUN pub get --offline
 RUN dart tool/build.dart
+RUN chmod u+x /app/analyze.sh
 RUN /app/analyze.sh
 
 # Add openfaas watchdog
