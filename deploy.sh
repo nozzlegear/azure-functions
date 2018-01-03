@@ -3,28 +3,52 @@
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 INPLACE=false
+PW=""
 
-while getopts ":in-place:" opt; do
+while getopts "h?ip:" opt; do
   case $opt in
-    a)
+    i)
       INPLACE=true
       ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
+    p)
+      PW=$OPTARG
+      ;;
+    h|\?)
+      echo "Usage: "
+      echo "    -h                Display this help message."
+      echo "    -i                In-place deployment. Script will skip SSHing, clone and repo sync, and instead will deploy functions from current directory."
+      echo "    -p password       Pass the git secret password for secret file decryption. You will be prompted for the password if this option is not specified."
+      exit 0
       ;;
   esac
 done
 
+function readPassword {
+    read -sp "Enter git secret password for file decryption: " PW
+    echo
+}
+
+function validatePassword {
+    size=${#PW}
+
+    if [ $size -lt 1 ]; then
+        echo -e "${RED}Password length was 0.${NC}"
+        exit 3
+    fi
+}
+
+if [ ! $PW ]; then
+    readPassword
+fi
+
+validatePassword
+
 if [ $INPLACE == true ]; then
-    echo "Using in-place deployment, skipping GitHub repository sync."
-    git secret reveal -d .gnupg -f
+    git secret reveal -d .gnupg -p "$PW" -f
     faas build -f functions.yml
     faas deploy -f functions.yml
     echo "Deployment finished!"
 else
-    #1: Cd to 'functions' dir
-    #2: Pull the latest version of this repository
     deployTarget=$FUNC_DEPLOY_TARGET
 
     if [ ! $deployTarget ]; then
@@ -45,7 +69,7 @@ else
 # EOF
 # )
 
-    COMMAND="if [ ! -d azure-functions ]; then git clone 'https://github.com/nozzlegear/azure-functions.git'; fi && cd azure-functions && git pull && bash deploy.sh --in-place"
+    COMMAND="if [ ! -d azure-functions ]; then git clone 'https://github.com/nozzlegear/azure-functions.git'; fi && cd azure-functions && git pull && bash deploy.sh -ip '$PW'"
 
     ssh "$FUNC_DEPLOY_TARGET" "$COMMAND"
 
