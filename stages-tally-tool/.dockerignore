@@ -1,0 +1,6 @@
+bin
+obj
+env.*
+publish
+.dart-tool
+.dart_tool

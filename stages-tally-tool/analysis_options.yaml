@@ -1,0 +1,28 @@
+analyzer:
+  strong: true
+  exclude:
+    - '*.g.dart'
+    - '**/*.g.dart'
+  errors:
+    undefined_identifier: error
+    undefined_class: error
+    undefined_method: error
+    undefined_function: error
+    missing_return: error
+    return_of_invalid_type: error
+    not_enough_required_arguments: error
+    no_adjacent_strings_in_list: error
+    dead_code: info
+    unused_import: info
+
+linter:
+  rules:
+    - always_declare_return_types
+    - one_member_abstracts
+    - avoid_returning_null
+    - avoid_positional_boolean_parameters
+    - empty_constructor_bodies
+    - prefer_is_empty # Don't use list.length == 0 because an iterable doesn't know its own length and will be forced to count, impacting performance.
+    - unawaited_futures
+    - unnecessary_lambdas # Don't create an unnecessary lambda when a tearoff will do. Bad: list.forEach((v) {print(v)}); Good: list.forEach(print).
+    - use_to_and_as_if_applicable # Prefer naming a method toSomeType() if it converts something to a type. Prefer naming a method asSomeType() if it returns something cast to a type.
