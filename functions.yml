@@ -16,3 +16,10 @@ functions:
       image: nozzlegear/sci-tally-tool
       environment_file:
           - ./sci-tally-tool/env.yml
+
+  artist_tally_tool:
+      lang: Dockerfile
+      handler: ./artist-tally-tool
+      image: nozzlegear/artist-tally-tool
+      environment_file:
+          - ./artist-tally-tool/env.yml

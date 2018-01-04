@@ -82,3 +82,4 @@ env.yml
 # Dart pub files
 .packages
 .pub/
+.dart_tool
