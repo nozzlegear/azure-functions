@@ -23,3 +23,10 @@ functions:
       image: nozzlegear/artist-tally-tool
       environment_file:
           - ./artist-tally-tool/env.yml
+
+  stages_tally_tool:
+      lang: Dockerfile
+      handler: ./stages-tally-tool
+      image: nozzlegear/stages-tally-tool
+      environment_file:
+          - ./stages-tally-tool/env.yml
