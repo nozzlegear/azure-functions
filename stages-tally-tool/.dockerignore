@@ -4,3 +4,4 @@ env.*
 publish
 .dart-tool
 .dart_tool
+dist
