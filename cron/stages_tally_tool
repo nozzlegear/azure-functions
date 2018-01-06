@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+0 12 * * * root curl localhost:8080/function/stages_tally_tool >> /var/log/stages_tally_tool.log 2>&1
+
+# Place this file under /etc/cron.d
