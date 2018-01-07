@@ -1,4 +1,4 @@
 SHELL=/bin/sh
-0 12 * * 2-6 root curl localhost:8080/function/artist_tally_tool >> /var/log/artist_tally_tool.log 2>&1
+0 12 * * 2-6 root curl localhost:8080/function/artist_tally_tool?env=production >> /var/log/artist_tally_tool.log 2>&1
 
 # Place this file under /etc/cron.d
