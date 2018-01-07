@@ -83,3 +83,6 @@ env.yml
 .packages
 .pub/
 .dart_tool
+
+# Temporary files
+*~
