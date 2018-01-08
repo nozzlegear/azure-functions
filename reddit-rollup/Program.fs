@@ -1,4 +1,4 @@
-// Learn more about F# at http://fsharp.org
+﻿// Learn more about F# at http://fsharp.org
 open System
 open Newtonsoft.Json
 open Newtonsoft.Json.FSharp;
@@ -20,6 +20,8 @@ let log level (data: 'T option) message =
 
     printfn "[%s] %s: %s%s" levelStr dateStr message dataStr
 
+let stringSplit (onChar: char) (s: string) = s.Split onChar
+
 let envVarRequired name =
     let value = System.Environment.GetEnvironmentVariable name
 
@@ -28,23 +30,10 @@ let envVarRequired name =
     | s -> s
 
 let swuApiKey = envVarRequired "REDDIT_ROLLUP_SWU_KEY"
+
 let swuTemplateId = envVarRequired "REDDIT_ROLLUP_SWU_TEMPLATE_ID"
-let subs = [
-    "politicaldiscussion"
-    "birbs"
-    "shaboozey"
-    "thecompletionist"
-    "warcraftlore"
-    "halostory"
-    "csharp"
-    "fsharp"
-    "dotnet"
-    "typescript"
-    "javascript"
-    "coolgithubprojects"
-    "asmr"
-    "anxiety"
-]
+
+let subs = envVarRequired "REDDIT_ROLLUP_SUB_LIST" |> stringSplit (char ",")
 
 let resolutionFilter resolution =
     resolution.height < 700 && resolution.height > 300
