@@ -1,4 +1,4 @@
-﻿// Learn more about F# at http://fsharp.org
+// Learn more about F# at http://fsharp.org
 open System
 open Newtonsoft.Json
 open Newtonsoft.Json.FSharp;
@@ -113,7 +113,7 @@ let convertPostToHtml (post: PostData) =
                 %s
                 <hr />
             </div>
-        """ post.subreddit_name_prefixed post.subreddit_name_prefixed post.title post.permalink body
+        """ post.subreddit_name_prefixed post.subreddit_name_prefixed post.permalink post.title body
 
     result
 
