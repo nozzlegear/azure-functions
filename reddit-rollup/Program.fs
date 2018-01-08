@@ -1,7 +1,6 @@
 ﻿// Learn more about F# at http://fsharp.org
 open System
 open Newtonsoft.Json
-open Newtonsoft.Json.FSharp;
 open Domain
 open System.Net
 
@@ -38,7 +37,7 @@ let subs = envVarRequired "REDDIT_ROLLUP_SUB_LIST" |> stringSplit (char ",")
 let resolutionFilter resolution =
     resolution.height < 700 && resolution.height > 300
 
-let converter = Newtonsoft.Json.Converters.DiscriminatedUnionConverter()
+let converter = Fable.JsonConverter() :> JsonConverter
 
 let getTopPosts (count: int) (subreddit: string) =
     log Info None <| sprintf "Getting posts for subreddit %s" subreddit
@@ -53,15 +52,11 @@ let getTopPosts (count: int) (subreddit: string) =
 
     result.EnsureSuccessStatusCode() |> ignore
 
-    let settings =
-        JsonSerializerSettings()
-        |> Newtonsoft.Json.FSharp.Serialisation.extend
-
     let body =
         result.Content.ReadAsStringAsync()
         |> Async.AwaitTask
         |> Async.RunSynchronously
-        |> fun s -> JsonConvert.DeserializeObject<SubredditListResponse>(s, settings)
+        |> fun s -> JsonConvert.DeserializeObject<SubredditListResponse>(s, [|converter|])
 
     match body.data.children with
     | c when c.Length >= 3 -> List.take count c
