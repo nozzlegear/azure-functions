@@ -69,7 +69,7 @@ else
 # EOF
 # )
 
-    COMMAND="if [ ! -d azure-functions ]; then git clone 'https://github.com/nozzlegear/azure-functions.git'; fi && cd azure-functions && git pull && bash deploy.sh -ip '$PW' && cp cron/* /etc/cron.d"
+    COMMAND="if [ ! -d azure-functions ]; then git clone 'https://github.com/nozzlegear/azure-functions.git'; fi && cd azure-functions && git pull && bash deploy.sh -ip '$PW' && rm */env.yml && cp cron/* /etc/cron.d"
 
     ssh "$FUNC_DEPLOY_TARGET" "$COMMAND"
 
