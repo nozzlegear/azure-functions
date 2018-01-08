@@ -30,3 +30,10 @@ functions:
       image: nozzlegear/stages-tally-tool
       environment_file:
           - ./stages-tally-tool/env.yml
+
+  reddit_rollup:
+      lang: Dockerfile
+      handler: ./reddit-rollup
+      image: nozzlegear/reddit-rollup
+      environment_file:
+          - ./reddit-rollup/env.yml
