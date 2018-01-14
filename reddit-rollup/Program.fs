@@ -90,7 +90,7 @@ let convertPostToHtml (post: PostData) =
                     <a href='https://m.reddit.com/%s' target='_blank'>
                         <strong>%s:</strong>
                     </a>
-                    <a href='https://m.reddit.com/%s'>
+                    <a href='https://m.reddit.com%s'>
                         %s
                     </a>
                 </p>
