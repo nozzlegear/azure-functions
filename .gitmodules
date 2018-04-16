@@ -1,3 +1,6 @@
 [submodule "twitter-rollup"]
 	path = twitter-rollup
 	url = git@github.com:nozzlegear/twitter-rollup
+[submodule "sci-tally-tool"]
+	path = sci-tally-tool
+	url = git@github.com:nozzlegear/sci-tally-tool.git
