@@ -4,3 +4,6 @@
 [submodule "sci-tally-tool"]
 	path = sci-tally-tool
 	url = git@github.com:nozzlegear/sci-tally-tool.git
+[submodule "reddit-rollup"]
+	path = reddit-rollup
+	url = git@github.com:nozzlegear/reddit-rollup
