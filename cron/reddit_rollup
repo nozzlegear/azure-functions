@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+0 12 * * * root docker run --env-file /var/env/reddit-rollup.env --rm nozzlegear/reddit-rollup >> /var/log/reddit_rollup.log 2>&1
+
+# Place this file under /etc/cron.d
