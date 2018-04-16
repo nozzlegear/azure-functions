@@ -78,6 +78,8 @@ template
 .gnupg/random_seed
 env.yml
 */env.yml
+.env
+
 
 # Dart pub files
 .packages
