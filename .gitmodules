@@ -10,3 +10,6 @@
 [submodule "artist-tally-tool"]
 	path = artist-tally-tool
 	url = git@github.com:nozzlegear/artist-tally-tool
+[submodule "stages-tally-tool"]
+	path = stages-tally-tool
+	url = git@github.com:nozzlegear/stages-tally-tool.git
