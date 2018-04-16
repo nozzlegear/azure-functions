@@ -1,4 +1,4 @@
 SHELL=/bin/sh
-0 12 * * 1 root curl localhost:8080/function/stages_tally_tool >> /var/log/stages_tally_tool.log 2>&1
+0 12 * * 1 root docker run --env-file /env/var/stages-tally-tool.env --rm nozzlegear/stages-tally-tool >> /var/log/stages_tally_tool.log 2>&1
 
 # Place this file under /etc/cron.d
