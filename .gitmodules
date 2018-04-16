@@ -7,3 +7,6 @@
 [submodule "reddit-rollup"]
 	path = reddit-rollup
 	url = git@github.com:nozzlegear/reddit-rollup
+[submodule "artist-tally-tool"]
+	path = artist-tally-tool
+	url = git@github.com:nozzlegear/artist-tally-tool
