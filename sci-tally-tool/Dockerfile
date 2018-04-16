@@ -1,5 +1,9 @@
-FROM google/dart
+FROM google/dart:1.24
 WORKDIR /app
+
+# Add dos2unix
+RUN apt-get update
+RUN apt-get install dos2unix -y
 
 # copy project and restore as distinct layers
 COPY pubspec.* ./
@@ -9,9 +13,8 @@ RUN pub get
 COPY . ./
 RUN pub get --offline
 RUN dart tool/build.dart
+RUN dos2unix /app/analyze.sh
 RUN chmod u+x /app/analyze.sh
 RUN /app/analyze.sh
-
-RUN /usr/bin/dart --version
 
 CMD ["/usr/bin/dart", "/app/lib/main.dart"]
