@@ -1,4 +1,4 @@
 SHELL=/bin/sh
-0 12 * * 0 root docker run -it --env-file /var/env/sci-tally-tool.env --rm nozzlegear/sci-tally-tool:latest >> /var/log/sci_tally_tool.log 2>&1
+0 12 * * 0 root docker run --env-file /var/env/sci-tally-tool.env --rm nozzlegear/sci-tally-tool:latest >> /var/log/sci_tally_tool.log 2>&1
 
 # Place this file under /etc/cron.d
