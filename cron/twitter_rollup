@@ -1,4 +1,4 @@
 SHELL=/bin/sh
-0 12 * * * root curl localhost:8080/function/twitter_rollup >> /var/log/twitter_rollup.log 2>&1
+0 12 * * * root docker run -it --env-file /etc/twitter-rollup.env --rm nozzlegear/twitter-rollup:latest >> /var/log/twitter_rollup.log 2>&1
 
 # Place this file under /etc/cron.d
