@@ -5,7 +5,7 @@
   "description": "",
   "dependencies": {
     "alexa-message-builder": "^1.1.0",
-    "axios": "^0.16.2",
+    "axios": "^0.21.1",
     "bluebird": "^3.5.0",
     "boom": "^5.1.0",
     "davenport": "^2.6.0",
