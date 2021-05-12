@@ -14,7 +14,7 @@
     "gumroad-api": "^0.4.0",
     "logspect": "^1.0.2",
     "node-uuid": "^1.4.8",
-    "nodemailer": "^4.0.1",
+    "nodemailer": "^6.4.16",
     "nodemailer-sparkpost-transport": "^2.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
